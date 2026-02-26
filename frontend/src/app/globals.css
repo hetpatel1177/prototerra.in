@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+:root {
+  /* Design Tokens */
+  --pt-bg: #050505;
+  --pt-text: #F5F5F5;
+  --pt-secondary: #9A9A9A;
+  --pt-clay: #C47A2C;
+
+  /* Font fallbacks - will be overridden by Next.js font variables */
+  --font-sans: 'Inter', sans-serif;
+  --font-geist-sans: 'Geist Sans', sans-serif;
+}
+
+@theme inline {
+  --color-pt-bg: var(--pt-bg);
+  --color-pt-text: var(--pt-text);
+  --color-pt-secondary: var(--pt-secondary);
+  --color-pt-clay: var(--pt-clay);
+  --font-sans: var(--font-geist-sans);
+}
+
+@layer base {
+  body {
+    background-color: var(--pt-bg);
+    color: var(--pt-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Tracking wide as per design direction */
+    letter-spacing: 0.05em;
+  }
+
+  /* Hide scrollbar for Lenis */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  /* Text selection color */
+  ::selection {
+    background-color: var(--pt-clay);
+    color: var(--pt-bg);
+  }
+}
+
+/* Custom Scrollbar hide if Lenis doesn't cover all cases or for fallback */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* Printing styles */
+@media print {
+  @page {
+    margin: 0;
+    size: auto;
+  }
+
+  body {
+    background-color: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide non-essential elements for printing */
+  nav,
+  footer,
+  .checkout-header,
+  button,
+  a[href="/"] {
+    display: none !important;
+  }
+
+  /* Ensure the main content takes full width and looks clean */
+  main {
+    padding: 20px !important;
+    margin: 0 !important;
+    background-color: white !important;
+    min-height: auto !important;
+  }
+
+  .print-container {
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    color: black !important;
+    background-color: white !important;
+  }
+
+  /* Force background colors to print if needed, though simpler is better */
+  .bg-zinc-900,
+  .bg-zinc-800,
+  .bg-black {
+    background-color: white !important;
+    color: black !important;
+    border-color: #eee !important;
+  }
+
+  .text-pt-clay,
+  .text-zinc-400,
+  .text-zinc-500 {
+    color: black !important;
+  }
+
+  /* Make sure images print or are hidden if they clutter */
+  img {
+    filter: grayscale(100%);
+  }
+
+  /* Typography adjustments for print */
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: black !important;
+  }
+}
