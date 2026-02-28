@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRef } from 'react';
+import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 interface Product {
@@ -47,10 +48,12 @@ export default function MaterialReveal() {
                     }}
                     className="w-full h-full bg-pt-secondary/10 overflow-hidden relative"
                 >
-                    <img
+                    <Image
                         src={imageSrc}
                         alt={label}
-                        className="w-full h-full object-cover scale-110"
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 1024px"
+                        className="object-cover scale-110"
                     />
                     <div className="absolute bottom-8 left-8">
                         <span className="text-pt-text text-sm tracking-widest uppercase bg-pt-bg/50 backdrop-blur-md px-4 py-2">

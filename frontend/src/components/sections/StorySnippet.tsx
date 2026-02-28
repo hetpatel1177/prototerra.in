@@ -1,7 +1,8 @@
 'use client';
 import { useRef } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import Image from 'next/image';
+import { m, useScroll, useTransform } from 'framer-motion';
 
 export default function StorySnippet() {
     const containerRef = useRef<HTMLElement>(null);
@@ -21,12 +22,12 @@ export default function StorySnippet() {
 
     return (
         <section ref={containerRef} className="py-24 px-6 md:px-12 bg-pt-bg">
-            <motion.div
+            <m.div
                 style={{ borderRadius }}
                 className="flex flex-col md:flex-row gap-12 items-center bg-zinc-900/50 overflow-hidden border border-zinc-800/50"
             >
                 <div className="w-full md:w-1/2 aspect-square md:aspect-auto md:h-[600px] relative">
-                    <img src="/assets/our_story_hero_page.png" alt="Potter at work" className="object-cover w-full h-full" />
+                    <Image src="/assets/our_story_hero_page.png" alt="Potter at work" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
                 </div>
 
                 <div className="w-full md:w-1/2 p-6 md:p-12 lg:p-24">
@@ -60,7 +61,7 @@ export default function StorySnippet() {
                         Read Our Full Story
                     </Link>
                 </div>
-            </motion.div>
+            </m.div>
         </section>
     );
 }

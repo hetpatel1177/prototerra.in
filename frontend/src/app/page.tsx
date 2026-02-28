@@ -1,8 +1,21 @@
 'use client';
+import dynamic from 'next/dynamic';
 import HeroDepth from '@/components/hero/HeroDepth';
-import FeaturedCollections from '@/components/sections/FeaturedCollections';
-import StorySnippet from '@/components/sections/StorySnippet';
-import LatestProductsSlider from '@/components/sections/LatestProductsSlider';
+
+// Dynamically import heavy sections
+const FeaturedCollections = dynamic(() => import('@/components/sections/FeaturedCollections'), {
+  loading: () => <div className="h-96 bg-pt-bg animate-pulse" />,
+  ssr: false
+});
+
+const StorySnippet = dynamic(() => import('@/components/sections/StorySnippet'), {
+  ssr: false
+});
+
+const LatestProductsSlider = dynamic(() => import('@/components/sections/LatestProductsSlider'), {
+  loading: () => <div className="h-screen bg-pt-bg animate-pulse" />,
+  ssr: false
+});
 
 export default function Home() {
   return (

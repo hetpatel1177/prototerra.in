@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingBag } from 'lucide-react';
 import { formatPrice } from '@/lib/formatPrice';
 
@@ -43,10 +44,12 @@ function TiltCard({ product, index }: { product: Product; index: number }) {
                 className="relative w-full aspect-[4/5] bg-zinc-900 border border-zinc-800 group overflow-hidden cursor-pointer"
             >
                 {product.images?.[0] ? (
-                    <img
+                    <Image
                         src={product.images[0]}
                         alt={product.name}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                 ) : (
                     <div className="absolute inset-0 bg-zinc-800 flex items-center justify-center">

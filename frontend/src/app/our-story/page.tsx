@@ -1,5 +1,5 @@
-'use client';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 // Default content as fallback
@@ -71,11 +71,13 @@ export default function OurStoryPage() {
             {/* Fixed Hero Background */}
             <div className="fixed inset-0 z-[-1] pointer-events-none">
                 <div className="absolute inset-0 bg-zinc-900 opacity-50 z-10"></div>
-                <img
+                <Image
                     src={content.hero.image || defaultContent.hero.image}
                     alt="Hero"
-                    className="absolute inset-0 w-full h-full object-cover opacity-60 z-0"
-                    onError={(e) => { e.currentTarget.src = defaultContent.hero.image; }}
+                    fill
+                    priority
+                    className="object-cover opacity-60 z-0"
+                    sizes="100vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-pt-bg/30 via-transparent to-pt-bg z-10" />
             </div>
@@ -100,11 +102,12 @@ export default function OurStoryPage() {
                 {/* Section 2: Earth, Hand, Spirit */}
                 <section className="py-32 px-6 md:px-12 max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
                     <div className="order-2 md:order-1 relative aspect-square bg-zinc-900 rounded-sm overflow-hidden group">
-                        <img
+                        <Image
                             src={content.philosophy.image || defaultContent.philosophy.image}
                             alt="Philosophy"
-                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-1000"
-                            onError={(e) => { e.currentTarget.src = defaultContent.philosophy.image; }}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-1000"
                         />
                     </div>
                     <div className="order-1 md:order-2">
@@ -137,11 +140,12 @@ export default function OurStoryPage() {
                                 <div key={i} className="group cursor-default">
                                     <div className="aspect-video bg-zinc-900 mb-8 overflow-hidden rounded-sm relative">
                                         <span className="absolute top-4 left-4 bg-pt-clay text-pt-bg rounded-full w-8 h-8 flex items-center justify-center font-bold z-10 transition-transform duration-500 group-hover:scale-110">0{i + 1}</span>
-                                        <img
+                                        <Image
                                             src={step.img || step.image || defaultContent.process.steps[i]?.img || '/assets/story-hero.jpg'}
                                             alt={step.title}
-                                            className="object-cover w-full h-full grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out"
-                                            onError={(e) => { e.currentTarget.src = defaultContent.process.steps[i]?.img || '/assets/story-hero.jpg'; }}
+                                            fill
+                                            sizes="(max-width: 768px) 100vw, 33vw"
+                                            className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 ease-out"
                                         />
                                     </div>
                                     <h3 className="text-2xl font-bold mb-4 group-hover:text-pt-clay transition-colors duration-300">{step.title}</h3>

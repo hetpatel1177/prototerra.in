@@ -57,20 +57,20 @@ export default function Footer() {
                         Preserving the ancient craft of clay through contemporary design and artisanal collaboration.
                     </p>
                     <div className="flex gap-4 mt-8">
-                        {/* Website: Add your URL below */}
-                        <a href="https://prototerra.in" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-pt-secondary hover:text-pt-text hover:bg-zinc-800 transition-all">
+                        {/* Website */}
+                        <a href="https://prototerra.in" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-pt-secondary hover:text-pt-text hover:bg-zinc-800 transition-all" aria-label="Visit our website">
                             <Globe className="w-4 h-4" />
                         </a>
-                        {/* Email: Add mailto:your@email.com below */}
-                        <a href="mailto:admin@prototerra.in" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-pt-secondary hover:text-pt-text hover:bg-zinc-800 transition-all">
+                        {/* Email */}
+                        <a href="mailto:admin@prototerra.in" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-pt-secondary hover:text-pt-text hover:bg-zinc-800 transition-all" aria-label="Send us an email">
                             <Mail className="w-4 h-4" />
                         </a>
-                        {/* Instagram: Add your profile URL below */}
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-pt-secondary hover:text-pt-text hover:bg-zinc-800 transition-all">
+                        {/* Instagram */}
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-pt-secondary hover:text-pt-text hover:bg-zinc-800 transition-all" aria-label="Follow us on Instagram">
                             <Instagram className="w-4 h-4" />
                         </a>
                         {/* WhatsApp */}
-                        <a href="https://wa.me/917802817800" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-pt-secondary hover:text-pt-text hover:bg-zinc-800 transition-all">
+                        <a href="https://wa.me/917802817800" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center text-pt-secondary hover:text-pt-text hover:bg-zinc-800 transition-all" aria-label="Contact us on WhatsApp">
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                             </svg>
@@ -80,7 +80,7 @@ export default function Footer() {
 
                 {/* Links: Collections */}
                 <div className="col-span-1">
-                    <h4 className="text-xs font-bold tracking-widest text-pt-text/80 uppercase mb-6">Collections</h4>
+                    <h3 className="text-xs font-bold tracking-widest text-[#9A9A9A] uppercase mb-6">Collections</h3>
                     <ul className="space-y-4 text-sm text-pt-secondary">
                         {collections.length > 0
                             ? collections.map(c => (
@@ -99,7 +99,7 @@ export default function Footer() {
 
                 {/* Links: Company */}
                 <div className="col-span-1">
-                    <h4 className="text-xs font-bold tracking-widest text-pt-text/80 uppercase mb-6">Company</h4>
+                    <h3 className="text-xs font-bold tracking-widest text-[#9A9A9A] uppercase mb-6">Company</h3>
                     <ul className="space-y-4 text-sm text-pt-secondary">
                         <li><Link href="/our-story" className="hover:text-pt-clay transition-colors">Our Story</Link></li>
                         <li><Link href="/sustainability" className="hover:text-pt-clay transition-colors">Sustainability</Link></li>
@@ -109,7 +109,7 @@ export default function Footer() {
 
                 {/* Journal / Newsletter */}
                 <div className="col-span-1">
-                    <h4 className="text-xs font-bold tracking-widest text-pt-text/80 uppercase mb-6">Journal</h4>
+                    <h3 className="text-xs font-bold tracking-widest text-[#9A9A9A] uppercase mb-6">Journal</h3>
                     <p className="text-sm text-pt-secondary mb-6">
                         Join our inner circle for collection previews and studio updates.
                     </p>
@@ -121,12 +121,13 @@ export default function Footer() {
                             onChange={(e) => setEmail(e.target.value)}
                             disabled={status === 'loading' || status === 'success'}
                             required
-                            className="w-full bg-zinc-900 border border-zinc-800 rounded px-4 py-3 text-sm text-pt-text focus:outline-none focus:border-pt-clay transition-colors disabled:opacity-50"
+                            className="w-full bg-zinc-900 border border-zinc-800 rounded px-4 py-3 text-sm text-pt-text placeholder:text-zinc-400 focus:outline-none focus:border-pt-clay transition-colors disabled:opacity-50"
                         />
                         <button
                             type="submit"
                             disabled={status === 'loading' || status === 'success' || !email}
                             className="absolute right-2 top-1/2 -translate-y-1/2 text-pt-clay hover:text-pt-text transition-colors disabled:opacity-50"
+                            aria-label="Subscribe to newsletter"
                         >
                             {status === 'loading' ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowRight className="w-5 h-5" />}
                         </button>
@@ -140,11 +141,11 @@ export default function Footer() {
             </div>
 
             {/* Bottom Bar */}
-            <div className="border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-pt-secondary/60 uppercase tracking-wider">
+            <div className="border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-pt-secondary uppercase tracking-wider">
                 <p>© 2026 ProtoTerra Artisanal Ceramics. All rights reserved.</p>
                 <div className="flex gap-8 mt-4 md:mt-0">
-                    <Link href="/privacy" className="hover:text-pt-text">Privacy Policy</Link>
-                    <Link href="/terms" className="hover:text-pt-text">Terms of Service</Link>
+                    <Link href="/privacy" className="hover:text-pt-text underline-offset-4 hover:underline">Privacy Policy</Link>
+                    <Link href="/terms" className="hover:text-pt-text underline-offset-4 hover:underline">Terms of Service</Link>
                 </div>
             </div>
         </footer>

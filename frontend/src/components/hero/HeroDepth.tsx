@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { m, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { useImageSequence } from '@/hooks/useImageSequence';
 import { drawHero } from '@/lib/draw';
 import { clsx } from 'clsx';
@@ -10,9 +11,9 @@ export default function HeroDepth() {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    // Load Sequence
-    // Frame count: 160, Path: /assets/ezgif-frame-XXX.png
-    const { images, progress: loadProgress } = useImageSequence('/assets/ezgif-frame-', 160, 'png');
+    // Load Sequence: Using optimized .webp frames (30KB each vs 850KB original)
+    // We use a step of 2 to take 80 frames from the 160 original frames.
+    const { images, progress: loadProgress, firstFrameLoaded } = useImageSequence('/assets/ezgif-frame-', 80, 'webp', 2);
 
     // Scroll Progress: 0 -> 1 based on container
     const { scrollYProgress } = useScroll({
@@ -45,11 +46,10 @@ export default function HeroDepth() {
         const render = () => {
             const progress = scrollYProgress.get();
 
-            // Calculate current frame index
-            // Map 0-1 to 0-159
+            // Calculate current frame index (0 to 79)
             const frameIndex = Math.min(
-                159,
-                Math.max(0, Math.floor(progress * 159))
+                79,
+                Math.max(0, Math.floor(progress * 79))
             );
 
             const currentImage = images[frameIndex];
@@ -61,9 +61,8 @@ export default function HeroDepth() {
                 canvas.height = innerHeight;
             }
 
-            // Draw (Standard draw, no blur simulation needed if frames have it)
+            // Draw
             if (currentImage && currentImage.complete) {
-                // We pass 'true' to disable effects (scale/blur) as sequence has it
                 drawHero(ctx, currentImage, 0, canvas.width, canvas.height, true);
             }
 
@@ -79,62 +78,68 @@ export default function HeroDepth() {
 
     return (
         <section ref={containerRef} className="relative h-[300vh] bg-pt-bg">
-            {/* Sticky Canvas Container */}
             <div className="sticky top-0 h-screen w-full overflow-hidden">
 
-                {/* Loading Indicator */}
+                {/* Initial Frame Placeholder (Next.js Optimized for LCP) */}
+                <div className={clsx("absolute inset-0 z-[1] transition-opacity duration-1000", loadProgress > 0.1 ? "opacity-0 pointer-events-none" : "opacity-100")}>
+                    <Image
+                        src="/assets/ezgif-frame-001.webp"
+                        alt="ProtoTerra Hero"
+                        fill
+                        priority
+                        className="object-cover"
+                        sizes="100vw"
+                    />
+                </div>
+
+                {/* Loading Progress */}
                 {loadProgress < 1 && (
-                    <div className="absolute inset-0 flex items-center justify-center z-50 bg-pt-bg">
-                        <span className="text-pt-secondary text-xs tracking-widest">
-                            LOADING {(loadProgress * 100).toFixed(0)}%
-                        </span>
-                    </div>
+                    <div className="absolute bottom-0 left-0 h-1 bg-pt-clay/30 z-50 transition-all duration-300"
+                        style={{ width: `${loadProgress * 100}%` }}
+                    />
                 )}
 
-                {/* Canvas */}
                 <canvas
                     ref={canvasRef}
                     className="absolute inset-0 w-full h-full z-0 pointer-events-none"
                 />
 
-                {/* Text Overlays */}
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
 
                     {/* Phase 1: Intro */}
-                    <motion.div style={{ opacity: introOpacity, y: textY }} className="text-center">
+                    <m.div style={{ opacity: introOpacity, y: textY }} className="text-center">
                         <h1 className="text-5xl md:text-8xl font-light tracking-widest text-pt-text uppercase">
                             ProtoTerra
                         </h1>
                         <p className="mt-4 text-sm md:text-base text-pt-secondary tracking-[0.2em] font-light">
                             Technology shaped by Earth
                         </p>
-                    </motion.div>
+                    </m.div>
 
                     {/* Phase 2: Layer by layer */}
-                    <motion.div style={{ opacity: layerOpacity }} className="absolute text-center">
+                    <m.div style={{ opacity: layerOpacity }} className="absolute text-center">
                         <p className="text-2xl md:text-4xl text-pt-text font-light tracking-wide">
                             Layer by layer
                         </p>
-                    </motion.div>
+                    </m.div>
 
                     {/* Phase 3: Algorithm */}
-                    <motion.div style={{ opacity: algoOpacity }} className="absolute text-center">
+                    <m.div style={{ opacity: algoOpacity }} className="absolute text-center">
                         <p className="text-2xl md:text-4xl text-pt-text font-light tracking-wide">
                             Guided by algorithm
                         </p>
-                    </motion.div>
+                    </m.div>
 
                     {/* Phase 4: Fire */}
-                    <motion.div style={{ opacity: fireOpacity }} className="absolute text-center">
+                    <m.div style={{ opacity: fireOpacity }} className="absolute text-center">
                         <p className="text-2xl md:text-4xl text-pt-text font-light tracking-wide">
                             Finished by fire
                         </p>
-                    </motion.div>
+                    </m.div>
 
                 </div>
 
-                {/* Scroll Indicator */}
-                <motion.div
+                <m.div
                     style={{ opacity: introOpacity }}
                     className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
                 >
@@ -142,7 +147,7 @@ export default function HeroDepth() {
                         <div className="absolute top-0 left-0 w-full h-full bg-pt-clay animate-scroll-down" />
                     </div>
                     <span className="text-[10px] uppercase tracking-widest text-pt-secondary">Scroll</span>
-                </motion.div>
+                </m.div>
 
             </div>
         </section>

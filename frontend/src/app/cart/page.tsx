@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { X, Minus, Plus, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
@@ -51,7 +52,7 @@ export default function CartPage() {
                                 <div className="w-24 h-32 bg-zinc-900 rounded-sm overflow-hidden relative group shrink-0">
                                     <Link href={`/shop/${item.id}`} className="absolute inset-0 z-10" />
                                     {item.image ? (
-                                        <img src={item.image} alt={item.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                                        <Image src={item.image} alt={item.name} fill sizes="96px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
                                         <div className="w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-600">No Image</div>
                                     )}

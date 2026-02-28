@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Search, ShoppingBag, ArrowLeft, X } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
@@ -208,10 +209,12 @@ function SearchResults() {
                                             <Link key={product._id} href={`/shop/${product._id}`} className="group block">
                                                 <div className="aspect-[3/4] bg-zinc-900 rounded-sm mb-4 overflow-hidden relative">
                                                     {product.images?.[0] ? (
-                                                        <img
+                                                        <Image
                                                             src={product.images[0]}
                                                             alt={product.name}
-                                                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700"
+                                                            fill
+                                                            sizes="(max-width: 768px) 50vw, 25vw"
+                                                            className="object-cover group-hover:scale-105 transition-transform duration-700"
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full bg-zinc-800 flex items-center justify-center">

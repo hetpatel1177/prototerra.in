@@ -4,7 +4,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { formatPrice } from '@/lib/formatPrice';
 
@@ -212,7 +211,7 @@ export default function LatestProductsSlider() {
                                                 <span className="font-mono font-bold text-sm text-white whitespace-nowrap">{formatPrice(product.price)}</span>
                                             </div>
                                             <h3 className="text-xl font-medium mb-3 group-hover:text-pt-clay transition-colors line-clamp-1 h-7">{product.name}</h3>
-                                            <p className="text-sm text-zinc-500 line-clamp-2 leading-relaxed h-10">{product.description}</p>
+                                            <p className="text-sm text-pt-secondary line-clamp-2 leading-relaxed h-10">{product.description}</p>
                                         </div>
                                     </div>
                                 </Link>

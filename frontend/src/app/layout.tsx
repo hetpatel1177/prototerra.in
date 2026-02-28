@@ -1,10 +1,14 @@
 import type { Metadata } from 'next';
 import { Inter, Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import dynamic from 'next/dynamic';
 import SmoothScroll from '@/components/SmoothScroll';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import Providers from '@/components/Providers';
+
+const Footer = dynamic(() => import('@/components/Footer'), {
+  ssr: true, // Keep SEO but separate chunk
+});
 
 const inter = Inter({
   variable: '--font-inter',

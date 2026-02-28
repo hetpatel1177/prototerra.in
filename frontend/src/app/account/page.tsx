@@ -2,6 +2,7 @@
 'use client';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { User, LogOut, Package, ExternalLink, ChevronRight } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
@@ -65,11 +66,11 @@ export default function AccountPage() {
                 <div className="md:col-span-1 space-y-6">
                     <div className="bg-zinc-900/50 p-6 rounded-sm border border-zinc-800">
                         <div className="flex items-center gap-4 mb-6">
-                            <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden border border-zinc-700">
+                            <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden border border-zinc-700 relative">
                                 {session.user?.image ? (
-                                    <img src={session.user.image} alt={session.user.name || 'User'} className="w-full h-full object-cover" />
+                                    <Image src={session.user.image} alt={session.user.name || 'User'} fill sizes="64px" className="object-cover" />
                                 ) : (
-                                    <span className="text-2xl font-bold text-pt-clay">
+                                    <span className="text-2xl font-bold text-pt-clay relative z-10">
                                         {(session.user?.email?.[0] || session.user?.name?.[0] || 'U').toUpperCase()}
                                     </span>
                                 )}
@@ -142,7 +143,7 @@ export default function AccountPage() {
                                             {order.items.slice(0, 3).map((item, i) => (
                                                 <div key={i} className="w-8 h-8 rounded-full border border-zinc-900 bg-zinc-800 overflow-hidden relative">
                                                     {item.productId?.images?.[0] && (
-                                                        <img src={item.productId.images[0]} alt="" className="w-full h-full object-cover" />
+                                                        <Image src={item.productId.images[0]} alt="" fill sizes="32px" className="object-cover" />
                                                     )}
                                                 </div>
                                             ))}

@@ -365,13 +365,13 @@ export default function CheckoutPage() {
                 <div className="space-y-6 mb-8 border-b border-zinc-800 pb-8">
                     {cartItems.map(item => (
                         <div key={item.id} className="flex gap-4">
-                            <div className="w-16 h-16 bg-white rounded-md relative flex-shrink-0 bg-zinc-900 overflow-hidden">
+                            <div className="w-16 h-16 rounded-md relative flex-shrink-0 bg-zinc-900 overflow-hidden">
                                 {item.image ? (
-                                    <img src={item.image} alt={item.name} className="object-cover w-full h-full" />
+                                    <Image src={item.image} alt={item.name} fill sizes="64px" className="object-cover" />
                                 ) : (
                                     <div className="w-full h-full bg-zinc-800"></div>
                                 )}
-                                <span className="absolute -top-2 -right-2 w-5 h-5 bg-zinc-600 text-white text-xs flex items-center justify-center rounded-full">{item.quantity}</span>
+                                <span className="absolute -top-2 -right-2 w-5 h-5 bg-zinc-600 text-white text-xs flex items-center justify-center rounded-full z-10">{item.quantity}</span>
                             </div>
                             <div className="flex-1">
                                 <h3 className="font-medium text-sm">{item.name}</h3>

@@ -2,6 +2,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { CheckCircle, MapPin, Calendar, Printer } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { formatPrice } from '@/lib/formatPrice';
@@ -143,7 +144,7 @@ export default function OrderConfirmationPage() {
                             <div key={i} className="flex gap-6 items-center print:border-b print:border-gray-100 print:pb-4">
                                 <div className="w-16 h-16 bg-zinc-800 rounded-sm relative overflow-hidden print:bg-gray-100 print:border print:border-gray-200">
                                     {item.productId?.images?.[0] && (
-                                        <img src={item.productId.images[0]} alt={item.productId.name} className="object-cover w-full h-full" />
+                                        <Image src={item.productId.images[0]} alt={item.productId.name} fill sizes="64px" className="object-cover" />
                                     )}
                                 </div>
                                 <div className="flex-1">

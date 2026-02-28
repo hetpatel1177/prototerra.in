@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { ShoppingCart, Search, User, LogOut, Menu, X } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
+import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
@@ -58,7 +59,7 @@ export default function Navbar() {
 
             {/* Right: Actions */}
             <div className="flex items-center gap-4 md:gap-6">
-                <Link href="/search" className="md:hidden relative group">
+                <Link href="/search" className="md:hidden relative group" aria-label="Search artifacts">
                     <Search className="w-6 h-6 text-pt-secondary group-hover:text-pt-text transition-colors" />
                 </Link>
 
@@ -69,11 +70,11 @@ export default function Navbar() {
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         placeholder="Search artifacts..."
-                        className="bg-zinc-900/50 border border-zinc-800 rounded-full pl-10 pr-4 py-1.5 text-sm text-pt-text placeholder:text-zinc-600 focus:outline-none focus:border-pt-clay w-64 transition-all"
+                        className="bg-zinc-900/50 border border-zinc-800 rounded-full pl-10 pr-4 py-1.5 text-sm text-pt-text placeholder:text-zinc-400 focus:outline-none focus:border-pt-clay w-64 transition-all"
                     />
                 </form>
 
-                <Link href="/cart" className="relative group">
+                <Link href="/cart" className="relative group" aria-label="View shopping cart">
                     <ShoppingCart className="w-6 h-6 text-pt-secondary group-hover:text-pt-text transition-colors" />
                     {cartCount > 0 && (
                         <span className="absolute -top-1 -right-1 w-4 h-4 bg-pt-clay text-pt-bg text-[10px] font-bold flex items-center justify-center rounded-full">
@@ -86,12 +87,12 @@ export default function Navbar() {
                     <div className="relative" ref={menuRef}>
                         <button
                             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                            className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden border border-zinc-700 hover:border-pt-clay transition-colors"
+                            className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden border border-zinc-700 hover:border-pt-clay transition-colors relative"
                         >
                             {session.user?.image ? (
-                                <img src={session.user.image} alt={session.user.name || 'User'} className="w-full h-full object-cover" />
+                                <Image src={session.user.image} alt={session.user.name || 'User'} fill sizes="32px" className="object-cover" />
                             ) : (
-                                <span className="text-xs font-bold text-pt-clay">
+                                <span className="text-xs font-bold text-pt-clay relative z-10">
                                     {(session.user?.email?.[0] || session.user?.name?.[0] || 'U').toUpperCase()}
                                 </span>
                             )}
@@ -115,7 +116,7 @@ export default function Navbar() {
                         )}
                     </div>
                 ) : (
-                    <Link href="/login" className="relative group">
+                    <Link href="/login" className="relative group" aria-label="Login to your account">
                         <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden border border-zinc-700 hover:border-pt-clay transition-colors">
                             <User className="w-5 h-5 text-pt-secondary" />
                         </div>
@@ -133,7 +134,7 @@ export default function Navbar() {
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             placeholder="Search artifacts..."
-                            className="bg-zinc-900 border border-zinc-800 rounded-full pl-10 pr-4 py-2 text-sm text-pt-text placeholder:text-zinc-500 focus:outline-none focus:border-pt-clay w-full transition-all"
+                            className="bg-zinc-900 border border-zinc-800 rounded-full pl-10 pr-4 py-2 text-sm text-pt-text placeholder:text-zinc-400 focus:outline-none focus:border-pt-clay w-full transition-all"
                         />
                     </form>
                     <div className="flex flex-col items-center gap-4 text-sm font-medium tracking-wide text-pt-secondary">
