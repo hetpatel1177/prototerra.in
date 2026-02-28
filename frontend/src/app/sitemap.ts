@@ -15,9 +15,9 @@ export const revalidate = 86400; // Revalidate sitemap once a day
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://prototerra.in';
-    // Use the env var during build if available, else fallback to canonical API URL
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.prototerra.in';
 
+    // Static pages
     const sitemapEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
@@ -25,45 +25,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: route === '' ? 1 : 0.8,
     }));
 
+    // Dynamic Products
     try {
-        // Attempt to fetch dynamic products
-        const res = await fetch(`${apiUrl}/api/products`);
-        if (res.ok) {
-            const data = await res.json();
-            if (data.success && Array.isArray(data.data)) {
-                data.data.forEach((product: any) => {
-                    sitemapEntries.push({
-                        // Defaulting to slug, fallback to _id
-                        url: `${baseUrl}/shop/${product.slug || product._id}`,
-                        lastModified: new Date(product.updatedAt || new Date()),
-                        changeFrequency: 'weekly',
-                        priority: 0.7,
-                    });
+        const res = await fetch(`${apiUrl}/api/products`, { next: { revalidate: 3600 } });
+        const data = await res.json();
+        if (data?.success && Array.isArray(data.data)) {
+            data.data.forEach((product: any) => {
+                const date = product.updatedAt ? new Date(product.updatedAt) : new Date();
+                sitemapEntries.push({
+                    url: `${baseUrl}/shop/${product.slug || product._id}`,
+                    lastModified: date.getTime() ? date : new Date(),
+                    changeFrequency: 'weekly',
+                    priority: 0.7,
                 });
-            }
+            });
         }
-    } catch (error) {
-        console.warn("Could not fetch products for sitemap:", error);
+    } catch (e) {
+        console.warn("Sitemap: Products fetch failed", e);
     }
 
+    // Dynamic Collections
     try {
-        // Attempt to fetch dynamic collections
-        const cRes = await fetch(`${apiUrl}/api/collections`);
-        if (cRes.ok) {
-            const cData = await cRes.json();
-            if (cData.success && Array.isArray(cData.data)) {
-                cData.data.forEach((collection: any) => {
-                    sitemapEntries.push({
-                        url: `${baseUrl}/collections/${collection.slug || collection._id}`,
-                        lastModified: new Date(collection.updatedAt || new Date()),
-                        changeFrequency: 'weekly',
-                        priority: 0.8,
-                    });
+        const cRes = await fetch(`${apiUrl}/api/collections`, { next: { revalidate: 3600 } });
+        const cData = await cRes.json();
+        if (cData?.success && Array.isArray(cData.data)) {
+            cData.data.forEach((collection: any) => {
+                const date = collection.updatedAt ? new Date(collection.updatedAt) : new Date();
+                sitemapEntries.push({
+                    url: `${baseUrl}/collections/${collection.slug || collection._id}`,
+                    lastModified: date.getTime() ? date : new Date(),
+                    changeFrequency: 'weekly',
+                    priority: 0.8,
                 });
-            }
+            });
         }
-    } catch (error) {
-        console.warn("Could not fetch collections for sitemap:", error);
+    } catch (e) {
+        console.warn("Sitemap: Collections fetch failed", e);
     }
 
     return sitemapEntries;
