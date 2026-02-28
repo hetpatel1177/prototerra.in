@@ -17,6 +17,7 @@ interface Product {
     category?: string;
     tags?: string[];
     inStock: boolean;
+    stockQty?: number;
     collectionId?: string;
 }
 
@@ -29,7 +30,7 @@ interface Collection {
 function SearchResults() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const { addToCart } = useCart();
+    const { addToCart, items } = useCart();
 
     const query = searchParams.get('q') || '';
     const [inputValue, setInputValue] = useState(query);
@@ -83,7 +84,9 @@ function SearchResults() {
         : [];
 
     function handleAdd(product: Product) {
-        if (!product.inStock) return;
+        const cartItem = items.find(i => i.id === product._id);
+        const qty = cartItem ? cartItem.quantity : 0;
+        if (!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || qty >= (product.stockQty ?? Infinity)) return;
         addToCart(product, 1);
         setAddedId(product._id);
         setTimeout(() => setAddedId(null), 1500);
@@ -220,20 +223,29 @@ function SearchResults() {
                                                     <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                                                         <button
                                                             onClick={(e) => { e.preventDefault(); handleAdd(product); }}
-                                                            disabled={!product.inStock}
+                                                            disabled={!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || (() => {
+                                                                const cartItem = items.find(i => i.id === product._id);
+                                                                return cartItem ? cartItem.quantity >= (product.stockQty ?? Infinity) : false;
+                                                            })()}
                                                             className={`w-full py-3 text-xs font-bold uppercase tracking-wider transition-colors
-                                                                ${!product.inStock
+                                                                ${(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || (() => {
+                                                                    const cartItem = items.find(i => i.id === product._id);
+                                                                    return cartItem ? cartItem.quantity >= (product.stockQty ?? Infinity) : false;
+                                                                })())
                                                                     ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
                                                                     : addedId === product._id
                                                                         ? 'bg-green-600 text-white'
                                                                         : 'bg-pt-clay text-pt-bg hover:bg-white hover:text-pt-bg'
                                                                 }`}
                                                         >
-                                                            {!product.inStock ? 'Out of Stock' : addedId === product._id ? '✓ Added!' : 'Add to Cart'}
+                                                            {(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)) ? 'Out of Stock' : (() => {
+                                                                const cartItem = items.find(i => i.id === product._id);
+                                                                return cartItem && cartItem.quantity >= (product.stockQty ?? Infinity) ? 'Max Stock' : addedId === product._id ? '✓ Added!' : 'Add to Cart';
+                                                            })()}
                                                         </button>
                                                     </div>
 
-                                                    {!product.inStock && (
+                                                    {(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)) && (
                                                         <div className="absolute top-3 left-3 bg-zinc-900/80 text-zinc-400 text-[10px] px-2 py-1 uppercase tracking-wider">
                                                             Sold Out
                                                         </div>

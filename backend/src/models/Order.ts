@@ -10,30 +10,37 @@ export interface IOrder extends Document {
     orderNumber: string;
     customer: {
         email: string;
+        phone: string;
         firstName: string;
         lastName: string;
         address: string;
         city: string;
         state: string;
+        country: string;
         zip: string;
     };
     items: IOrderItem[];
     total: number;
-    status: 'pending' | 'confirmed' | 'shipped';
+    status: 'pending' | 'paid' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'failed';
     shippingMethod: string;
     paymentMode: 'RAZORPAY' | 'COD';
+    paymentStatus?: 'pending' | 'paid' | 'failed';
+    razorpayOrderId?: string;
+    razorpayPaymentId?: string;
+    razorpaySignature?: string;
 }
 
 const OrderSchema: Schema = new Schema({
     orderNumber: { type: String, required: true, unique: true },
     customer: {
         email: { type: String, required: true },
-        phone: { type: String }, // Optional or required? Let's make it optional for backward compat but frontend sends it
+        phone: { type: String, required: true },
         firstName: { type: String, required: true },
         lastName: { type: String, required: true },
         address: { type: String, required: true },
         city: { type: String, required: true },
         state: { type: String, required: true },
+        country: { type: String, required: true },
         zip: { type: String, required: true },
     },
     items: [{

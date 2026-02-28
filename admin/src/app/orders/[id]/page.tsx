@@ -14,7 +14,7 @@ interface Order {
     _id: string;
     orderNumber: string;
     status: string;
-    customer: { firstName: string; lastName: string; email: string; address: string; city: string; state: string; zip: string };
+    customer: { firstName: string; lastName: string; email: string; phone?: string; address: string; city: string; state: string; country?: string; zip: string };
     items: { productId: { name: string; images: string[] } | null; quantity: number; price: number }[];
     total: number;
     shippingMethod: string;

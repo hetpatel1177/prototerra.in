@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
@@ -29,7 +30,7 @@ interface Collection {
 
 export default function CollectionPage() {
     const { slug } = useParams();
-    const { addToCart } = useCart();
+    const { addToCart, items } = useCart();
     const [products, setProducts] = useState<Product[]>([]);
     const [collection, setCollection] = useState<Collection | null>(null);
     const [loading, setLoading] = useState(true);
@@ -63,7 +64,9 @@ export default function CollectionPage() {
     }, [slug]);
 
     function handleAdd(product: Product) {
-        if (!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)) return;
+        const cartItem = items.find(i => i.id === product._id);
+        const qty = cartItem ? cartItem.quantity : 0;
+        if (!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || qty >= (product.stockQty ?? Infinity)) return;
         addToCart(product, 1);
         setAddedId(product._id);
         setTimeout(() => setAddedId(null), 1500);
@@ -75,7 +78,7 @@ export default function CollectionPage() {
             <div className="relative pt-32 pb-24 px-6 md:px-12 overflow-hidden border-b border-zinc-900">
                 {collection?.image && (
                     <div className="absolute inset-0 z-0">
-                        <img src={collection.image} alt={collection.name} className="w-full h-full object-cover opacity-10" />
+                        <Image src={collection.image} alt={collection.name} fill priority sizes="100vw" className="object-cover opacity-10" />
                         <div className="absolute inset-0 bg-gradient-to-b from-pt-bg/80 to-pt-bg" />
                     </div>
                 )}
@@ -111,10 +114,12 @@ export default function CollectionPage() {
                             <Link key={product._id} href={`/shop/${product._id}`} className="group block">
                                 <div className="aspect-[3/4] bg-zinc-900 rounded-sm mb-4 overflow-hidden relative">
                                     {product.images?.[0] ? (
-                                        <img
+                                        <Image
                                             src={product.images[0]}
                                             alt={product.name}
-                                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700"
+                                            fill
+                                            sizes="(max-width: 768px) 50vw, 25vw"
+                                            className="object-cover group-hover:scale-105 transition-transform duration-700"
                                         />
                                     ) : (
                                         <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
@@ -126,16 +131,25 @@ export default function CollectionPage() {
                                     <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                                         <button
                                             onClick={(e) => { e.preventDefault(); handleAdd(product); }}
-                                            disabled={!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)}
+                                            disabled={!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || (() => {
+                                                const cartItem = items.find(i => i.id === product._id);
+                                                return cartItem ? cartItem.quantity >= (product.stockQty ?? Infinity) : false;
+                                            })()}
                                             className={`w-full py-3 text-xs font-bold uppercase tracking-wider transition-colors
-                                                 ${(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0))
+                                                 ${(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || (() => {
+                                                    const cartItem = items.find(i => i.id === product._id);
+                                                    return cartItem ? cartItem.quantity >= (product.stockQty ?? Infinity) : false;
+                                                })())
                                                     ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
                                                     : addedId === product._id
                                                         ? 'bg-green-600 text-white'
                                                         : 'bg-pt-clay text-pt-bg hover:bg-white hover:text-pt-bg'
                                                 }`}
                                         >
-                                            {(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)) ? 'Out of Stock' : addedId === product._id ? '✓ Added!' : 'Add to Cart'}
+                                            {(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)) ? 'Out of Stock' : (() => {
+                                                const cartItem = items.find(i => i.id === product._id);
+                                                return cartItem && cartItem.quantity >= (product.stockQty ?? Infinity) ? 'Max Stock' : addedId === product._id ? '✓ Added!' : 'Add to Cart';
+                                            })()}
                                         </button>
                                     </div>
 

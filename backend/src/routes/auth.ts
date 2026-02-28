@@ -61,10 +61,11 @@ router.post('/login', async (req, res) => {
 router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
-        const user = await User.findOne({ email, provider: 'credentials' });
+        const user = await User.findOne({ email });
 
-        if (!user) {
-            return res.status(404).json({ success: false, error: 'User not found' });
+        if (!user || user.provider !== 'credentials') {
+            // Prevent email enumeration
+            return res.json({ success: true, data: "If an account exists, an email was sent." });
         }
 
         // Generate token
@@ -87,11 +88,18 @@ router.post('/forgot-password', async (req, res) => {
         `;
 
         try {
-            await sendEmail(
+            const emailRes = await sendEmail(
                 user.email,
                 'Password Reset Request',
                 message
             );
+
+            if (!emailRes) {
+                user.resetPasswordToken = undefined;
+                user.resetPasswordExpires = undefined;
+                await user.save();
+                return res.status(500).json({ success: false, error: 'Email could not be sent. Please try again later.' });
+            }
 
             res.json({ success: true, data: "Email sent" });
         } catch (error) {

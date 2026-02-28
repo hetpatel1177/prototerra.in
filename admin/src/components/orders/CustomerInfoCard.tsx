@@ -1,13 +1,15 @@
-import { MapPin, User, Mail } from 'lucide-react';
+import { MapPin, User, Mail, Phone } from 'lucide-react';
 
 interface Order {
     customer: {
         firstName: string;
         lastName: string;
         email: string;
+        phone?: string;
         address: string;
         city: string;
         state: string;
+        country?: string;
         zip: string;
     };
 }
@@ -45,10 +47,18 @@ export function CustomerInfoCard({ order }: { order: Order }) {
                     </div>
                     <div className="min-w-0">
                         <p className="font-semibold text-[#F5F5F5] truncate">{fullName}</p>
+                        
                         <div className="flex items-center gap-1 mt-0.5">
                             <Mail className="h-3 w-3 text-[#9A9A9A]" />
                             <p className="text-xs text-[#9A9A9A] truncate">{customer.email}</p>
                         </div>
+                        
+                        {customer.phone && (
+                            <div className="flex items-center gap-1 mt-0.5">
+                                <Phone className="h-3 w-3 text-[#9A9A9A]" />
+                                <p className="text-xs text-[#9A9A9A] truncate">{customer.phone}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -66,9 +76,9 @@ export function CustomerInfoCard({ order }: { order: Order }) {
                     <div className="space-y-1 text-sm text-[#F5F5F5]">
                         <p className="font-medium">{fullName}</p>
                         {customer.address && <p className="text-[#9A9A9A]">{customer.address}</p>}
-                        {(customer.city || customer.state || customer.zip) && (
+                        {(customer.city || customer.state || customer.zip || customer.country) && (
                             <p className="text-[#9A9A9A]">
-                                {[customer.city, customer.state, customer.zip].filter(Boolean).join(', ')}
+                                {[customer.city, customer.state, customer.zip, customer.country].filter(Boolean).join(', ')}
                             </p>
                         )}
                     </div>

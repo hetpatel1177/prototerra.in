@@ -18,8 +18,9 @@ declare global {
 export default function CheckoutPage() {
     const router = useRouter();
     const { data: session, status } = useSession();
-    const { items: cartItems, cartTotal, clearCart } = useCart();
+    const { items: cartItems, cartTotal, clearCart, syncStock } = useCart();
     const [loading, setLoading] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(true);
 
     // Hooks must be called before any early returns
     const [formData, setFormData] = useState({
@@ -28,6 +29,7 @@ export default function CheckoutPage() {
         lastName: '',
         address: '',
         city: '',
+        state: '',
         country: 'United States',
         zip: '',
         phone: '',
@@ -43,13 +45,23 @@ export default function CheckoutPage() {
     }, [session]);
 
     useEffect(() => {
+        syncStock().finally(() => setIsSyncing(false));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
         if (status === 'unauthenticated') {
             router.push('/login?callbackUrl=/checkout');
         }
     }, [status, router]);
 
-    if (status === 'loading') {
-        return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>;
+    if (status === 'loading' || isSyncing) {
+        return (
+            <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+                <div className="w-8 h-8 border-2 border-pt-clay border-t-transparent rounded-full animate-spin mb-4" />
+                <p className="text-sm tracking-widest text-zinc-500 uppercase">Verifying Availability...</p>
+            </div>
+        );
     }
 
     if (status === 'unauthenticated') {
@@ -85,7 +97,8 @@ export default function CheckoutPage() {
                         lastName: formData.lastName,
                         address: formData.address,
                         city: formData.city,
-                        state: 'NY', // Mock state
+                        state: formData.state,
+                        country: formData.country,
                         zip: formData.zip,
                         phone: formData.phone
                     },
@@ -104,7 +117,11 @@ export default function CheckoutPage() {
 
             if (!data.success) {
                 console.error('Order creation failed:', data.error);
-                alert('Failed to initiate order. Please try again.');
+                alert(data.error || 'Failed to initiate order. Please try again.');
+                if (data.outOfStock) {
+                    await syncStock();
+                    router.push('/cart');
+                }
                 setLoading(false);
                 return;
             }
@@ -232,18 +249,21 @@ export default function CheckoutPage() {
                         </div>
                         <input type="text" name="address" required placeholder="Address" onChange={handleInputChange} className="w-full bg-zinc-900 border border-zinc-700 rounded p-3 mb-4 focus:border-pt-clay focus:outline-none" />
                         <input type="text" placeholder="Apartment, suite, etc. (optional)" className="w-full bg-zinc-900 border border-zinc-700 rounded p-3 mb-4 focus:border-pt-clay focus:outline-none" />
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 gap-4 mb-4">
                             <input type="text" name="city" required placeholder="City" onChange={handleInputChange} className="w-full bg-zinc-900 border border-zinc-700 rounded p-3 focus:border-pt-clay focus:outline-none" />
+                            <input type="text" name="state" required placeholder="State / Province" onChange={handleInputChange} className="w-full bg-zinc-900 border border-zinc-700 rounded p-3 focus:border-pt-clay focus:outline-none" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
                             <div className="relative">
-                                <select name="country" className="w-full bg-zinc-900 border border-zinc-700 rounded p-3 appearance-none focus:border-pt-clay focus:outline-none text-zinc-400">
-                                    <option>United States</option>
-                                    <option>India</option>
-                                    <option>Canada</option>
-                                    <option>United Kingdom</option>
+                                <select name="country" value={formData.country} onChange={handleInputChange} className="w-full bg-zinc-900 border border-zinc-700 rounded p-3 appearance-none focus:border-pt-clay focus:outline-none text-zinc-400">
+                                    <option value="United States">United States</option>
+                                    <option value="India">India</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="United Kingdom">United Kingdom</option>
                                 </select>
                                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">▼</span>
                             </div>
-                            <input type="text" name="zip" required placeholder="ZIP code" onChange={handleInputChange} className="w-full bg-zinc-900 border border-zinc-700 rounded p-3 focus:border-pt-clay focus:outline-none" />
+                            <input type="text" name="zip" required placeholder="ZIP / Postal Code" onChange={handleInputChange} className="w-full bg-zinc-900 border border-zinc-700 rounded p-3 focus:border-pt-clay focus:outline-none" />
                         </div>
                     </section>
 

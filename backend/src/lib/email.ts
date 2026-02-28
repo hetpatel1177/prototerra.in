@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export const sendEmail = async (to: string, subject: string, html: string, replyTo?: string) => {
+export const sendEmail = async (to: string, subject: string, html: string, replyTo?: string, bcc?: string) => {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
         console.warn('⚠️ Email credentials not found in environment variables. Email will not be sent.');
         return;
@@ -25,6 +25,7 @@ export const sendEmail = async (to: string, subject: string, html: string, reply
             subject,
             html,
             replyTo: replyTo || process.env.EMAIL_USER,
+            bcc,
         };
 
         const info = await transporter.sendMail(mailOptions);

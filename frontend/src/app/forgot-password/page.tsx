@@ -27,14 +27,14 @@ export default function ForgotPasswordPage() {
             } else {
                 throw new Error(data.error || 'Something went wrong');
             }
-        } catch (error) {
+        } catch (err: any) {
             setStatus('error');
-            setMessage('Something went wrong. Please try again.');
+            setMessage(err.message || 'Something went wrong. Please try again.');
         }
     };
 
     return (
-        <main className="min-h-screen bg-pt-bg text-pt-text flex items-center justify-center px-6">
+        <main className="min-h-screen bg-pt-bg text-pt-text flex items-center justify-center px-6 pt-28 pb-12">
             <div className="w-full max-w-md">
                 <Link href="/login" className="flex items-center gap-2 text-xs text-pt-secondary hover:text-white transition-colors mb-8 uppercase tracking-wider">
                     <ArrowLeft className="w-4 h-4" /> Back to Login

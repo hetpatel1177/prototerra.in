@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { formatPrice } from '@/lib/formatPrice';
@@ -171,10 +172,12 @@ export default function LatestProductsSlider() {
                                     <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-sm overflow-hidden h-full flex flex-col hover:border-zinc-700 transition-colors duration-500 relative">
                                         <div className="aspect-[4/5] w-full overflow-hidden relative bg-zinc-900">
                                             {product.images?.[0] ? (
-                                                <img
+                                                <Image
                                                     src={product.images[0]}
                                                     alt={product.name}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, 33vw"
+                                                    className="object-cover group-hover:scale-110 transition-transform duration-1000"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-zinc-800">

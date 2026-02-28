@@ -33,8 +33,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             if (data.success && Array.isArray(data.data)) {
                 data.data.forEach((product: any) => {
                     sitemapEntries.push({
-                        // Defaulting to _id, change to slug if available
-                        url: `${baseUrl}/shop/${product._id}`,
+                        // Defaulting to slug, fallback to _id
+                        url: `${baseUrl}/shop/${product.slug || product._id}`,
                         lastModified: new Date(product.updatedAt || new Date()),
                         changeFrequency: 'weekly',
                         priority: 0.7,

@@ -38,7 +38,7 @@ export default function SignupPage() {
         }
     };
     return (
-        <main className="min-h-screen bg-pt-bg text-pt-text flex items-center justify-center px-6">
+        <main className="min-h-screen bg-pt-bg text-pt-text flex items-center justify-center px-6 pt-28 pb-12">
             <div className="w-full max-w-md">
                 <div className="text-center mb-12">
                     <Link href="/" className="font-bold tracking-widest flex items-center justify-center gap-2 mb-8">

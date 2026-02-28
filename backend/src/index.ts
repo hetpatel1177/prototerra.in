@@ -9,7 +9,14 @@ import cors from 'cors';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors());
+app.use(cors({
+    origin: [
+        "https://prototerra.in",
+        "https://www.prototerra.in",
+        "https://admin.prototerra.in"
+    ],
+    credentials: true
+}));
 app.use(express.json());
 
 // DB Connection
@@ -40,6 +47,9 @@ app.use('/api/contact', contactRoutes); // Register Contact Routes
 
 import newsletterRoutes from './routes/newsletter';
 app.use('/api/newsletter', newsletterRoutes);
+
+import reviewRoutes from './routes/reviews';
+app.use('/api/reviews', reviewRoutes);
 
 import contentRoutes from './routes/content';
 app.use('/api/content', contentRoutes);

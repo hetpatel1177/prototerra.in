@@ -1,13 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { Star, Truck, ShieldCheck, ArrowRight, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
+import ProductReviews from '@/components/ProductReviews';
 
 export default function ProductPage() {
     const { slug } = useParams();
-    const { addToCart } = useCart();
+    const { addToCart, items } = useCart();
     const [product, setProduct] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [added, setAdded] = useState(false);
@@ -29,8 +31,12 @@ export default function ProductPage() {
             .finally(() => setLoading(false));
     }, [slug]);
 
+    const cartItem = items.find((item) => item.id === product?._id);
+    const cartQty = cartItem ? cartItem.quantity : 0;
+    const reachedStockLimit = product && cartQty >= (product.stockQty ?? Infinity);
+
     const handleAddToCart = () => {
-        if (!product || product.stockQty <= 0) return;
+        if (!product || product.stockQty <= 0 || reachedStockLimit) return;
         addToCart(product);
         setAdded(true);
         setTimeout(() => setAdded(false), 2000);
@@ -87,11 +93,14 @@ export default function ProductPage() {
                                         : { transform: 'scale(1)', transformOrigin: 'center' }
                                 }
                             >
-                                <img
+                                <Image
                                     key={activeImg}
                                     src={images[activeImg]}
                                     alt={`${product.name} — view ${activeImg + 1}`}
-                                    className="object-cover w-full h-full"
+                                    fill
+                                    priority
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    className="object-cover"
                                     style={{ transition: 'opacity 0.25s ease' }}
                                 />
                             </div>
@@ -148,15 +157,17 @@ export default function ProductPage() {
                                 <button
                                     key={i}
                                     onClick={() => setActiveImg(i)}
-                                    className={`flex-shrink-0 w-20 h-20 rounded-sm overflow-hidden border-2 transition-all duration-200 ${i === activeImg
+                                    className={`relative flex-shrink-0 w-20 h-20 rounded-sm overflow-hidden border-2 transition-all duration-200 ${i === activeImg
                                         ? 'border-pt-clay scale-[1.05]'
                                         : 'border-transparent opacity-60 hover:opacity-100 hover:border-zinc-600'
                                         }`}
                                 >
-                                    <img
+                                    <Image
                                         src={img}
                                         alt={`${product.name} thumbnail ${i + 1}`}
-                                        className="object-cover w-full h-full"
+                                        fill
+                                        sizes="80px"
+                                        className="object-cover"
                                     />
                                 </button>
                             ))}
@@ -212,16 +223,16 @@ export default function ProductPage() {
 
                     <div className="flex gap-4 mb-12 border-b border-zinc-800 pb-12">
                         <button
-                            disabled={!product.inStock || product.stockQty <= 0}
+                            disabled={!product.inStock || product.stockQty <= 0 || reachedStockLimit}
                             onClick={handleAddToCart}
                             className={`flex-1 py-4 font-bold uppercase tracking-widest transition-all duration-300 
-                                ${(!product.inStock || product.stockQty <= 0)
+                                ${(!product.inStock || product.stockQty <= 0 || reachedStockLimit)
                                     ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
                                     : added
                                         ? 'bg-white text-pt-bg'
                                         : 'bg-pt-clay text-pt-bg hover:bg-white'}`}
                         >
-                            {(!product.inStock || product.stockQty <= 0) ? 'Out of Stock' : added ? '✓ Added to Cart' : 'Add to Cart'}
+                            {(!product.inStock || product.stockQty <= 0) ? 'Out of Stock' : reachedStockLimit ? 'Max Stock in Cart' : added ? '✓ Added to Cart' : 'Add to Cart'}
                         </button>
                     </div>
 
@@ -230,13 +241,11 @@ export default function ProductPage() {
                             <Truck className="w-4 h-4" />
                             Free Shipping
                         </div>
-                        <div className="flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4" />
-                            Lifetime Warranty
-                        </div>
                     </div>
                 </div>
             </div>
+
+            <ProductReviews productId={product._id} />
         </main>
     );
 }

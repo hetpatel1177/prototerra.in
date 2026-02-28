@@ -296,7 +296,9 @@ export default function CustomersPage() {
                                 const initials = `${c.firstName?.[0] ?? ''}${c.lastName?.[0] ?? ''}`.toUpperCase();
                                 const isNew = isNewThisMonth(c);
                                 const isReturning = c.orderCount > 1;
-                                const daysSinceLast = Math.floor((Date.now() - new Date(c.lastOrderDate).getTime()) / 86400000);
+                                const todayStr = new Date().setHours(0, 0, 0, 0);
+                                const orderStr = new Date(c.lastOrderDate).setHours(0, 0, 0, 0);
+                                const daysSinceLast = Math.round((todayStr - orderStr) / 86400000);
 
                                 return (
                                     <TableRow key={c.email}>

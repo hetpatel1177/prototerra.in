@@ -213,7 +213,8 @@ router.get('/revenue', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const { email } = req.query;
-        let query: any = {};
+        // Hide abandoned/pending Razorpay orders
+        let query: any = { status: { $ne: 'pending' } };
 
         if (email) {
             query['customer.email'] = email;
@@ -232,6 +233,22 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const { customer, items, total, shippingMethod, paymentMode } = req.body;
+
+        if (!items || items.length === 0) {
+            return res.status(400).json({ success: false, error: 'Order must contain items' });
+        }
+
+        // Verify stock for all items BEFORE proceeding
+        for (const item of items) {
+            const product = await Product.findById(item.productId);
+            if (!product || !product.inStock || (product.stockQty !== undefined && product.stockQty < item.quantity)) {
+                return res.status(400).json({
+                    success: false,
+                    error: `Item "${product ? product.name : 'Unknown'}" does not have enough stock.`,
+                    outOfStock: true
+                });
+            }
+        }
 
         if (paymentMode === 'COD') {
             const order = new Order({
@@ -258,7 +275,9 @@ router.post('/', async (req, res) => {
             await sendEmail(
                 customer.email,
                 `Order Confirmed: ${order.orderNumber}`,
-                generateOrderEmailHtml(order)
+                generateOrderEmailHtml(order),
+                undefined,
+                'orders@prototerra.in'
             );
 
             return res.status(201).json({ success: true, data: order });
@@ -346,7 +365,9 @@ router.post('/verify-payment', async (req, res) => {
                 await sendEmail(
                     order.customer.email,
                     `Order Confirmed: ${order.orderNumber}`,
-                    generateOrderEmailHtml(order)
+                    generateOrderEmailHtml(order),
+                    undefined,
+                    'orders@prototerra.in'
                 );
             }
 

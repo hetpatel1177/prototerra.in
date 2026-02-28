@@ -22,8 +22,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://prototerra.in'),
   title: 'ProtoTerra | Earth & Code',
-  description: 'Technology shaped by Earth. Immersive storytelling environment.',
+  description: 'Technology shaped by Earth. Immersive storytelling environment and premium products built from nature.',
+  keywords: ['ProtoTerra', 'Earth', 'Code', 'Sustainable Tech', 'Premium Accessories', 'Natural Materials'],
+  authors: [{ name: 'ProtoTerra' }],
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://prototerra.in',
+    siteName: 'ProtoTerra',
+    title: 'ProtoTerra | Earth & Code',
+    description: 'Technology shaped by Earth. Immersive storytelling environment and premium products built from nature.',
+    images: [{
+      url: 'https://prototerra.in/og-image.jpg',
+      width: 1200,
+      height: 630,
+      alt: 'ProtoTerra Header Image',
+    }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ProtoTerra | Earth & Code',
+    description: 'Technology shaped by Earth. Immersive storytelling environment and premium products built from nature.',
+    creator: '@prototerra',
+    images: ['https://prototerra.in/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

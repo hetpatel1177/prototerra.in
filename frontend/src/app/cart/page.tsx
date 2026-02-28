@@ -1,11 +1,26 @@
 'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { X, Minus, Plus, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
 
 export default function CartPage() {
-    const { items: cartItems, updateQuantity, removeFromCart, cartTotal } = useCart();
+    const { items: cartItems, updateQuantity, removeFromCart, cartTotal, syncStock } = useCart();
+    const [isSyncing, setIsSyncing] = useState(true);
+
+    useEffect(() => {
+        syncStock().finally(() => setIsSyncing(false));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    if (isSyncing) {
+        return (
+            <main className="min-h-screen bg-pt-bg text-pt-text pt-32 pb-24 flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-pt-clay border-t-transparent rounded-full animate-spin mx-auto" />
+            </main>
+        );
+    }
 
     if (cartItems.length === 0) {
         return (
@@ -60,7 +75,8 @@ export default function CartPage() {
                                             <span className="text-sm px-2 w-8 text-center">{item.quantity}</span>
                                             <button
                                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                className="p-2 hover:bg-zinc-900 text-zinc-500 hover:text-white transition-colors"
+                                                disabled={item.quantity >= (item.stockQty ?? Infinity)}
+                                                className={`p-2 transition-colors ${item.quantity >= (item.stockQty ?? Infinity) ? 'text-zinc-700 cursor-not-allowed' : 'hover:bg-zinc-900 text-zinc-500 hover:text-white'}`}
                                             >
                                                 <Plus className="w-3 h-3" />
                                             </button>

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingBag, ChevronDown, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
@@ -30,12 +31,14 @@ interface Collection {
 }
 
 function ProductCard({ product }: { product: Product }) {
-    const { addToCart } = useCart();
+    const { addToCart, items } = useCart();
     const [added, setAdded] = useState(false);
 
     function handleAdd(e: React.MouseEvent) {
         e.preventDefault();
-        if (!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)) return;
+        const cartItem = items.find(i => i.id === product._id);
+        const qty = cartItem ? cartItem.quantity : 0;
+        if (!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || qty >= (product.stockQty ?? Infinity)) return;
         addToCart(product, 1);
         setAdded(true);
         setTimeout(() => setAdded(false), 1500);
@@ -45,10 +48,12 @@ function ProductCard({ product }: { product: Product }) {
         <Link href={`/shop/${product._id}`} className="group block">
             <div className="aspect-[3/4] bg-zinc-900 rounded-sm mb-4 overflow-hidden relative">
                 {product.images?.[0] ? (
-                    <img
+                    <Image
                         src={product.images[0]}
                         alt={product.name}
-                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700"
+                        fill
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                 ) : (
                     <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
@@ -56,20 +61,28 @@ function ProductCard({ product }: { product: Product }) {
                     </div>
                 )}
 
-                {/* Add to Cart overlay */}
                 <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                     <button
                         onClick={handleAdd}
-                        disabled={!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)}
+                        disabled={!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || (() => {
+                            const cartItem = items.find(i => i.id === product._id);
+                            return cartItem ? cartItem.quantity >= (product.stockQty ?? Infinity) : false;
+                        })()}
                         className={`w-full py-3 text-xs font-bold uppercase tracking-wider transition-colors
-                            ${(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0))
+                            ${(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || (() => {
+                                const cartItem = items.find(i => i.id === product._id);
+                                return cartItem ? cartItem.quantity >= (product.stockQty ?? Infinity) : false;
+                            })())
                                 ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
                                 : added
                                     ? 'bg-green-600 text-white'
                                     : 'bg-pt-clay text-pt-bg hover:bg-white hover:text-pt-bg'
                             }`}
                     >
-                        {(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)) ? 'Out of Stock' : added ? '✓ Added to Cart' : 'Add to Cart'}
+                        {(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)) ? 'Out of Stock' : (() => {
+                            const cartItem = items.find(i => i.id === product._id);
+                            return cartItem && cartItem.quantity >= (product.stockQty ?? Infinity) ? 'Max Stock' : added ? '✓ Added to Cart' : 'Add to Cart';
+                        })()}
                     </button>
                 </div>
 
@@ -216,8 +229,8 @@ export default function CollectionsPage() {
                                     </Link>
                                 </div>
                                 {col.image && (
-                                    <div className="hidden md:block w-40 h-24 rounded-sm overflow-hidden shrink-0">
-                                        <img src={col.image} alt={col.name} className="w-full h-full object-cover" />
+                                    <div className="hidden md:block w-40 h-24 rounded-sm overflow-hidden shrink-0 relative">
+                                        <Image src={col.image} alt={col.name} fill sizes="160px" className="object-cover" />
                                     </div>
                                 )}
                             </div>

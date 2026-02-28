@@ -64,8 +64,8 @@ export default function ContactPage() {
                         <div>
                             <h3 className="text-sm font-bold uppercase tracking-widest mb-1">Studio</h3>
                             <p className="text-pt-secondary text-sm">
-                                123 Artisan Way, Creative District<br />
-                                Potter's Ville, CA 90210
+                                44, Tirupati Park Bunglows, Visnagar Road<br />
+                                Vijapur-382870
                             </p>
                         </div>
                     </div>

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
@@ -14,11 +15,12 @@ interface Product {
     material?: string;
     category?: string;
     inStock: boolean;
+    stockQty?: number;
 }
 
 export default function CuratedSelection() {
     const [products, setProducts] = useState<Product[]>([]);
-    const { addToCart } = useCart();
+    const { addToCart, items } = useCart();
     const skeletons = [1, 2, 3, 4];
 
     useEffect(() => {
@@ -43,21 +45,36 @@ export default function CuratedSelection() {
                             <Link href={`/shop/${item._id}`} className="block">
                                 <div className="aspect-[4/5] bg-zinc-900 rounded-sm mb-6 overflow-hidden relative">
                                     {item.images?.[0]
-                                        ? <img src={item.images[0]} alt={item.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
+                                        ? <Image src={item.images[0]} alt={item.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                         : <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
                                             <ShoppingBag className="w-8 h-8 text-zinc-600" />
                                         </div>
                                     }
-                                    {/* Quick Add overlay */}
                                     <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                                         <button
                                             onClick={(e) => {
                                                 e.preventDefault();
-                                                if (item.inStock) addToCart(item, 1);
+                                                const cartItem = items.find((i) => i.id === item._id);
+                                                const cartQty = cartItem ? cartItem.quantity : 0;
+                                                const reachedLimit = cartQty >= (item.stockQty ?? Infinity);
+                                                if (item.inStock && item.stockQty !== 0 && !reachedLimit) addToCart(item, 1);
                                             }}
-                                            className="w-full bg-pt-clay text-pt-bg py-2 text-xs font-bold uppercase tracking-wider hover:bg-white transition-colors"
+                                            disabled={!item.inStock || item.stockQty === 0 || (() => {
+                                                const ci = items.find(i => i.id === item._id);
+                                                return ci ? ci.quantity >= (item.stockQty ?? Infinity) : false;
+                                            })()}
+                                            className={`w-full py-2 text-xs font-bold uppercase tracking-wider transition-colors 
+                                                ${(!item.inStock || item.stockQty === 0 || (() => {
+                                                    const ci = items.find(i => i.id === item._id);
+                                                    return ci ? ci.quantity >= (item.stockQty ?? Infinity) : false;
+                                                })())
+                                                    ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
+                                                    : 'bg-pt-clay text-pt-bg hover:bg-white'}`}
                                         >
-                                            {item.inStock ? 'Quick Add' : 'Out of Stock'}
+                                            {(!item.inStock || item.stockQty === 0) ? 'Out of Stock' : (() => {
+                                                const ci = items.find(i => i.id === item._id);
+                                                return ci && ci.quantity >= (item.stockQty ?? Infinity) ? 'Max Stock' : 'Quick Add';
+                                            })()}
                                         </button>
                                     </div>
                                 </div>

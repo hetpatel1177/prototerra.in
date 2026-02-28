@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 
 interface Collection {
@@ -46,7 +47,7 @@ export default function FeaturedCollections() {
                     col.slug ? (
                         <Link href={`/collections/${col.slug}`} key={col._id} className="group relative block aspect-[4/5] md:aspect-square overflow-hidden bg-zinc-900 rounded-sm">
                             {col.image
-                                ? <img src={col.image} alt={col.name} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
+                                ? <Image src={col.image} alt={col.name} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                                 : <div className="absolute inset-0 bg-zinc-800" />
                             }
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-8 flex flex-col justify-end">
