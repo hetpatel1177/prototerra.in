@@ -87,6 +87,7 @@ export default function HeroDepth() {
                         alt="ProtoTerra Hero"
                         fill
                         priority
+                        unoptimized
                         className="object-cover"
                         sizes="100vw"
                     />
