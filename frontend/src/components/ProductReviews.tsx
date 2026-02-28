@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Star, Trash2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { formatDistanceToNow } from 'date-fns';
+import Link from 'next/link';
 
 interface Review {
     _id: string;
@@ -132,56 +133,68 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
                 {/* Write a Review Form */}
                 <div>
                     <h3 className="text-lg font-medium mb-6">Write a Review</h3>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <label className="block text-xs uppercase tracking-wider text-pt-secondary mb-2">Rating</label>
-                            <div className="flex gap-1" onMouseLeave={() => setHoverRating(0)}>
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <button
-                                        type="button"
-                                        key={star}
-                                        onClick={() => setRating(star)}
-                                        onMouseEnter={() => setHoverRating(star)}
-                                        className="focus:outline-none"
-                                    >
-                                        <Star className={`w-6 h-6 transition-colors duration-200 ${(hoverRating || rating) >= star ? 'text-pt-clay fill-pt-clay' : 'text-zinc-700'}`} />
-                                    </button>
-                                ))}
+                    {session ? (
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-xs uppercase tracking-wider text-pt-secondary mb-2">Rating</label>
+                                <div className="flex gap-1" onMouseLeave={() => setHoverRating(0)}>
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                            type="button"
+                                            key={star}
+                                            onClick={() => setRating(star)}
+                                            onMouseEnter={() => setHoverRating(star)}
+                                            className="focus:outline-none"
+                                        >
+                                            <Star className={`w-6 h-6 transition-colors duration-200 ${(hoverRating || rating) >= star ? 'text-pt-clay fill-pt-clay' : 'text-zinc-700'}`} />
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        <div>
-                            <label className="block text-xs uppercase tracking-wider text-pt-secondary mb-2">Name</label>
-                            <input
-                                required
-                                type="text"
-                                value={userName}
-                                onChange={(e) => setUserName(e.target.value)}
-                                className="w-full bg-zinc-900 border border-zinc-800 rounded p-3 text-white focus:outline-none focus:border-pt-clay transition-colors"
-                                placeholder="Your Name"
-                            />
-                        </div>
+                            <div>
+                                <label className="block text-xs uppercase tracking-wider text-pt-secondary mb-2">Name</label>
+                                <input
+                                    required
+                                    type="text"
+                                    value={userName}
+                                    onChange={(e) => setUserName(e.target.value)}
+                                    className="w-full bg-zinc-900 border border-zinc-800 rounded p-3 text-white focus:outline-none focus:border-pt-clay transition-colors"
+                                    placeholder="Your Name"
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block text-xs uppercase tracking-wider text-pt-secondary mb-2">Review</label>
-                            <textarea
-                                required
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                rows={4}
-                                className="w-full bg-zinc-900 border border-zinc-800 rounded p-3 text-white focus:outline-none focus:border-pt-clay transition-colors resize-none"
-                                placeholder="What did you like about this product?"
-                            ></textarea>
-                        </div>
+                            <div>
+                                <label className="block text-xs uppercase tracking-wider text-pt-secondary mb-2">Review</label>
+                                <textarea
+                                    required
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                    rows={4}
+                                    className="w-full bg-zinc-900 border border-zinc-800 rounded p-3 text-white focus:outline-none focus:border-pt-clay transition-colors resize-none"
+                                    placeholder="What did you like about this product?"
+                                ></textarea>
+                            </div>
 
-                        <button
-                            type="submit"
-                            disabled={submitting}
-                            className="bg-pt-clay text-black px-6 py-3 font-bold uppercase tracking-wider text-sm hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {submitting ? 'Submitting...' : 'Submit Review'}
-                        </button>
-                    </form>
+                            <button
+                                type="submit"
+                                disabled={submitting}
+                                className="bg-pt-clay text-black px-6 py-3 font-bold uppercase tracking-wider text-sm hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {submitting ? 'Submitting...' : 'Submit Review'}
+                            </button>
+                        </form>
+                    ) : (
+                        <div className="bg-zinc-900/30 border border-dashed border-zinc-800 p-8 text-center rounded">
+                            <p className="text-pt-secondary text-sm mb-4">Please sign in to share your experience with this artifact.</p>
+                            <Link
+                                href="/login"
+                                className="inline-block bg-zinc-800 text-white px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-pt-clay hover:text-black transition-all"
+                            >
+                                Sign In
+                            </Link>
+                        </div>
+                    )}
                 </div>
 
                 {/* Review List */}
