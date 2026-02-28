@@ -27,9 +27,17 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://prototerra.in'),
-  title: 'ProtoTerra | Earth & Code',
-  description: 'Technology shaped by Earth. Immersive storytelling environment and premium products built from nature.',
-  keywords: ['ProtoTerra', 'Earth', 'Code', 'Sustainable Tech', 'Premium Accessories', 'Natural Materials'],
+  title: {
+    default: 'ProtoTerra | Earth & Code',
+    template: '%s | ProtoTerra'
+  },
+  description: 'Technology shaped by Earth. Immersive storytelling and premium artisanal pottery built from nature.',
+  keywords: ['ProtoTerra', 'Earth', 'Code', 'Sustainable Tech', 'Premium Accessories', 'Natural Materials', 'Artisanal Pottery'],
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/apple-icon.png',
+  },
   authors: [{ name: 'ProtoTerra' }],
   openGraph: {
     type: 'website',
@@ -39,10 +47,10 @@ export const metadata: Metadata = {
     title: 'ProtoTerra | Earth & Code',
     description: 'Technology shaped by Earth. Immersive storytelling environment and premium products built from nature.',
     images: [{
-      url: 'https://prototerra.in/og-image.jpg',
-      width: 1200,
-      height: 630,
-      alt: 'ProtoTerra Header Image',
+      url: '/logo.png',
+      width: 1024,
+      height: 1024,
+      alt: 'ProtoTerra Brand Identity',
     }],
   },
   twitter: {
@@ -50,7 +58,7 @@ export const metadata: Metadata = {
     title: 'ProtoTerra | Earth & Code',
     description: 'Technology shaped by Earth. Immersive storytelling environment and premium products built from nature.',
     creator: '@prototerra',
-    images: ['https://prototerra.in/og-image.jpg'],
+    images: ['/logo.png'],
   },
   robots: {
     index: true,

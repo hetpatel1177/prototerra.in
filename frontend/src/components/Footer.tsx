@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Instagram, Mail, Globe, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -50,8 +51,17 @@ export default function Footer() {
 
                 {/* Brand */}
                 <div className="col-span-1">
-                    <Link href="/" className="font-bold text-lg tracking-widest flex items-center gap-2 mb-6">
-                        PROTOTERRA
+                    <Link href="/" className="font-bold text-lg tracking-widest flex items-center gap-3 mb-6 group">
+                        <div className="relative w-7 h-7">
+                            <Image
+                                src="/logo.png"
+                                alt="ProtoTerra Logo"
+                                width={28}
+                                height={28}
+                                className="object-contain"
+                            />
+                        </div>
+                        <span>PROTOTERRA</span>
                     </Link>
                     <p className="text-sm text-pt-secondary leading-relaxed max-w-xs">
                         Preserving the ancient craft of clay through contemporary design and artisanal collaboration.

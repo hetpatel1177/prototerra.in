@@ -46,8 +46,16 @@ export default function Navbar() {
                 >
                     {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
-                <Link href="/" className="font-bold text-lg md:text-xl tracking-widest flex items-center gap-2">
-                    PROTOTERRA
+                <Link href="/" className="font-bold text-lg md:text-xl tracking-widest flex items-center gap-3 group">
+                    <div className="relative w-8 h-8 transition-transform group-hover:scale-110 duration-300">
+                        <Image
+                            src="/logo.png"
+                            alt="ProtoTerra Logo"
+                            fill
+                            className="object-contain"
+                        />
+                    </div>
+                    <span>PROTOTERRA</span>
                 </Link>
 
                 <div className="hidden md:flex gap-8 text-sm font-medium tracking-wide text-pt-secondary">
