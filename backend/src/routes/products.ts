@@ -30,11 +30,12 @@ router.get('/:id', async (req, res) => {
 // POST /api/products  — multipart/form-data with up to 5 images
 router.post('/', upload.array('images', 5), async (req, res) => {
     try {
+        console.log('[API] Creating product:', req.body.name);
         const files = req.files as Express.Multer.File[];
 
-        // Validate required fields early so we return JSON, not an HTML 500
+        // Validate required fields early
         if (!req.body.name || !req.body.description || !req.body.price || !req.body.category) {
-            return res.status(400).json({ success: false, error: 'name, description, price and category are required.' });
+            return res.status(400).json({ success: false, error: 'Name, description, price and category are required.' });
         }
 
         const imageUrls: string[] = files ? files.map((f: any) => f.path) : [];
@@ -46,12 +47,15 @@ router.post('/', upload.array('images', 5), async (req, res) => {
         let features: string[] = [];
         try { features = req.body.features ? JSON.parse(req.body.features) : []; } catch { features = []; }
 
+        // Handle empty collectionId or other optional fields
+        const collectionId = req.body.collectionId === "" ? undefined : req.body.collectionId;
+
         const product = await Product.create({
             name: req.body.name,
             description: req.body.description,
             price: Number(req.body.price),
             category: req.body.category,
-            collectionId: req.body.collectionId || undefined,
+            collectionId: collectionId,
             material: req.body.material || undefined,
             dimensions: req.body.dimensions || undefined,
             sku: req.body.sku || undefined,
@@ -62,9 +66,14 @@ router.post('/', upload.array('images', 5), async (req, res) => {
             images: imageUrls,
         });
 
+        console.log('[API] Product created successfully:', product._id);
         res.status(201).json({ success: true, data: product });
     } catch (err: any) {
-        res.status(400).json({ success: false, error: err.message });
+        console.error('[API Error] Failed to create product:', err);
+        res.status(err.name === 'ValidationError' ? 400 : 500).json({
+            success: false,
+            error: err.message || 'Failed to create product'
+        });
     }
 });
 

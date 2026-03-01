@@ -9,15 +9,32 @@ import cors from 'cors';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+const allowedOrigins = [
+    "https://prototerra.in",
+    "https://www.prototerra.in",
+    "https://admin.prototerra.in",
+    "http://localhost:3000",
+    "http://localhost:3001"
+];
+
 app.use(cors({
-    origin: [
-        "https://prototerra.in",
-        "https://www.prototerra.in",
-        "https://admin.prototerra.in"
-    ],
-    credentials: true
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.warn(`[CORS] Blocked origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'), false);
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
-app.use(express.json());
+
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // DB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/prototerra';
@@ -55,9 +72,22 @@ import contentRoutes from './routes/content';
 app.use('/api/content', contentRoutes);
 
 // Global JSON error handler — ensures Express never returns an HTML error page
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
     console.error('[Express Error]', err);
-    res.status(err.status || 500).json({ success: false, error: err.message || 'Internal Server Error' });
+
+    // Ensure CORS headers are present even on error responses
+    const origin = req.headers.origin;
+    if (origin && allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
+
+    const status = err.status || (err.name === 'ValidationError' ? 400 : 500);
+    res.status(status).json({
+        success: false,
+        error: err.message || 'Internal Server Error',
+        details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
 });
 
 app.listen(PORT, () => {
