@@ -6,10 +6,13 @@ import clientPromise from '@/lib/mongodb';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: MongoDBAdapter(clientPromise),
+    secret: process.env.AUTH_SECRET,
+    trustHost: true,
+    debug: process.env.NODE_ENV === 'development' || true, // Keep true for now to debug production
     providers: [
         Google({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            clientId: process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET,
             allowDangerousEmailAccountLinking: true,
         }),
         Credentials({
