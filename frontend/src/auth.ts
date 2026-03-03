@@ -80,7 +80,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 await db.collection('users').updateOne(
                     { email: user.email }, // Use email as a stable key
-                    { $set: { provider: provider } }
+                    {
+                        $set: {
+                            provider: provider,
+                            image: user.image, // Sync profile picture
+                            updatedAt: new Date()
+                        },
+                        $setOnInsert: { createdAt: new Date() } // Ensure date is set for new users
+                    },
+                    { upsert: true }
                 );
             }
         },
