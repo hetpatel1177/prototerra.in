@@ -8,6 +8,17 @@ import User from '../models/User';
 
 const router = express.Router();
 
+// GET /api/auth/users
+router.get('/users', async (req, res) => {
+    try {
+        const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+        res.json({ success: true, data: users });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Failed to fetch users' });
+    }
+});
+
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
     try {
