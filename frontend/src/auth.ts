@@ -70,4 +70,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return session;
         },
     },
+    events: {
+        async signIn({ user, account }) {
+            // Force the 'provider' field to match reality in MongoDB
+            if (account && user.id) {
+                const client = await clientPromise;
+                const db = client.db();
+                const provider = account.provider; // 'google' or 'credentials'
+
+                await db.collection('users').updateOne(
+                    { email: user.email }, // Use email as a stable key
+                    { $set: { provider: provider } }
+                );
+            }
+        },
+        async createUser({ user }) {
+            // Optional: You can set defaults or cleanup here
+            if (user.email && !user.name) {
+                const client = await clientPromise;
+                const db = client.db();
+                await db.collection('users').updateOne(
+                    { email: user.email },
+                    { $set: { name: user.email.split('@')[0], provider: 'google' } }
+                );
+            }
+        }
+    }
 });
