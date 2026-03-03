@@ -78,15 +78,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const db = client.db();
                 const provider = account.provider; // 'google' or 'credentials'
 
+                // Get existing user to check for createdAt
+                const existing = await db.collection('users').findOne({ email: user.email });
+
                 await db.collection('users').updateOne(
                     { email: user.email }, // Use email as a stable key
                     {
                         $set: {
                             provider: provider,
                             image: user.image, // Sync profile picture
-                            updatedAt: new Date()
-                        },
-                        $setOnInsert: { createdAt: new Date() } // Ensure date is set for new users
+                            updatedAt: new Date(),
+                            // If createdAt is missing or NULL, set it now
+                            ...(!existing?.createdAt ? { createdAt: new Date() } : {})
+                        }
                     },
                     { upsert: true }
                 );
