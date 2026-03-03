@@ -44,7 +44,7 @@ mongoose.connect(MONGODB_URI)
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 app.get('/', (_req, res) => {
-    res.send('ProtoTerra Backend API Running');
+    res.send('ProtoTerra Backend API Running - v1.0.1 (Auth Users Fix)');
 });
 
 // Routes
