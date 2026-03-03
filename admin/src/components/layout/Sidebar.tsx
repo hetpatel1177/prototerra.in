@@ -15,6 +15,7 @@ const mainNav = [
     { title: 'Collections', href: '/collections', icon: Layers },
     { title: 'Orders', href: '/orders', icon: ShoppingCart },
     { title: 'Customers', href: '/customers', icon: Users },
+    { title: 'Users', href: '/users', icon: Users },
     { title: 'Pages', href: '/pages', icon: Layers },
     { title: 'Analytics', href: '/analytics', icon: BarChart3 },
 ];

@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Bell, Search, ShoppingBag, X, ExternalLink, Menu } from 'lucide-react';
+import { Bell, Search, ShoppingBag, X, ExternalLink, Menu, User } from 'lucide-react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { formatPrice } from '@/lib/formatPrice';
 
 const STORAGE_KEY = 'pt_admin_last_seen';
@@ -18,6 +19,7 @@ interface NewOrder {
 }
 
 export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
+    const { data: session } = useSession();
     const [notifications, setNotifications] = useState<NewOrder[]>([]);
     const [open, setOpen] = useState(false);
     const panelRef = useRef<HTMLDivElement>(null);
@@ -105,6 +107,16 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
                         <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#C47A2C]" />
                     </span>
                     Live
+                </div>
+
+                <div className="h-4 w-px" style={{ background: '#1f1f1f' }} />
+
+                {/* User Email */}
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-sm border border-[#1f1f1f] bg-[#161616]">
+                    <User className="h-3 w-3 text-[#C47A2C]" />
+                    <span className="text-[10px] font-medium text-[#9A9A9A]">
+                        {session?.user?.email ?? 'Admin'}
+                    </span>
                 </div>
 
                 <div className="h-4 w-px" style={{ background: '#1f1f1f' }} />
