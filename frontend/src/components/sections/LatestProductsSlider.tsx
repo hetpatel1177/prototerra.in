@@ -10,6 +10,7 @@ import { formatPrice } from '@/lib/formatPrice';
 interface Product {
     _id: string;
     name: string;
+    slug?: string;
     price: number;
     images: string[];
     category: string;
@@ -167,7 +168,7 @@ export default function LatestProductsSlider() {
                                 key={`${product._id}-${index}`}
                                 className="w-full md:w-1/3 px-3 flex-shrink-0"
                             >
-                                <Link href={`/shop/${product._id}`} className="group block h-full">
+                                <Link href={`/shop/${product.slug || product._id}`} className="group block h-full">
                                     <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-sm overflow-hidden h-full flex flex-col hover:border-zinc-700 transition-colors duration-500 relative">
                                         <div className="aspect-[4/5] w-full overflow-hidden relative bg-zinc-900">
                                             {product.images?.[0] ? (

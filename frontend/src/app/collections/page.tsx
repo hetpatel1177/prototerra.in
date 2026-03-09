@@ -1,162 +1,43 @@
-'use client';
-import { useEffect, useState } from 'react';
+import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, ChevronDown, ArrowRight } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import { formatPrice } from '@/lib/formatPrice';
+import { ShoppingBag, ArrowRight } from 'lucide-react';
+import ProductCard from '@/components/ProductCard';
+import CollectionsNav from './CollectionsNav';
 
-interface Product {
-    _id: string;
-    name: string;
-    price: number;
-    images: string[];
-    description: string;
-    dimensions?: string;
-    material?: string;
-    category?: string;
-    inStock: boolean;
-    stockQty?: number;
-    collectionId?: string;
+export const revalidate = 3600;
+
+async function getData() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [colRes, prodRes] = await Promise.all([
+        fetch(`${apiUrl}/api/collections`, { next: { revalidate: 3600 } }),
+        fetch(`${apiUrl}/api/products`, { next: { revalidate: 3600 } })
+    ]);
+
+    const colData = await colRes.json();
+    const prodData = await prodRes.json();
+
+    if (!colData.success) return [];
+
+    const cols = colData.data;
+    const allProducts = prodData.success ? prodData.data : [];
+
+    return cols.map((col: any) => ({
+        ...col,
+        products: allProducts.filter((p: any) => p.collectionId === col._id || p.collectionId?.toString() === col._id)
+    }));
 }
 
-interface Collection {
-    _id: string;
-    name: string;
-    slug: string;
-    description: string;
-    image: string;
-    featured: boolean;
-    products?: Product[];
-}
-
-function ProductCard({ product }: { product: Product }) {
-    const { addToCart, items } = useCart();
-    const [added, setAdded] = useState(false);
-
-    function handleAdd(e: React.MouseEvent) {
-        e.preventDefault();
-        const cartItem = items.find(i => i.id === product._id);
-        const qty = cartItem ? cartItem.quantity : 0;
-        if (!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || qty >= (product.stockQty ?? Infinity)) return;
-        addToCart(product, 1);
-        setAdded(true);
-        setTimeout(() => setAdded(false), 1500);
+export const metadata: Metadata = {
+    title: 'The Collections',
+    description: 'A curated assembly of artisanal pottery, where ancient tradition meets modern form. Browse our featured collections of premium ceramics.',
+    alternates: {
+        canonical: '/collections',
     }
+};
 
-    return (
-        <Link href={`/shop/${product._id}`} className="group block">
-            <div className="aspect-[3/4] bg-zinc-900 rounded-sm mb-4 overflow-hidden relative">
-                {product.images?.[0] ? (
-                    <Image
-                        src={product.images[0]}
-                        alt={product.name}
-                        fill
-                        sizes="(max-width: 768px) 50vw, 25vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                ) : (
-                    <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
-                        <ShoppingBag className="w-8 h-8 text-zinc-600" />
-                    </div>
-                )}
-
-                <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <button
-                        onClick={handleAdd}
-                        disabled={!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || (() => {
-                            const cartItem = items.find(i => i.id === product._id);
-                            return cartItem ? cartItem.quantity >= (product.stockQty ?? Infinity) : false;
-                        })()}
-                        className={`w-full py-3 text-xs font-bold uppercase tracking-wider transition-colors
-                            ${(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0) || (() => {
-                                const cartItem = items.find(i => i.id === product._id);
-                                return cartItem ? cartItem.quantity >= (product.stockQty ?? Infinity) : false;
-                            })())
-                                ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
-                                : added
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-pt-clay text-pt-bg hover:bg-white hover:text-pt-bg'
-                            }`}
-                    >
-                        {(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)) ? 'Out of Stock' : (() => {
-                            const cartItem = items.find(i => i.id === product._id);
-                            return cartItem && cartItem.quantity >= (product.stockQty ?? Infinity) ? 'Max Stock' : added ? '✓ Added to Cart' : 'Add to Cart';
-                        })()}
-                    </button>
-                </div>
-
-                {/* Out of stock badge */}
-                {(!product.inStock || (product.stockQty !== undefined && product.stockQty <= 0)) && (
-                    <div className="absolute top-3 left-3 bg-zinc-900/80 text-zinc-400 text-[10px] px-2 py-1 uppercase tracking-wider">
-                        Sold Out
-                    </div>
-                )}
-            </div>
-
-            <div className="flex justify-between items-start gap-2">
-                <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-base mb-1 group-hover:text-pt-clay transition-colors truncate">{product.name}</h3>
-                    <p className="text-xs text-pt-secondary truncate">
-                        {product.material || product.category} {product.dimensions && `· ${product.dimensions}`}
-                    </p>
-                </div>
-                <span className="text-pt-clay font-bold font-mono shrink-0">{formatPrice(product.price)}</span>
-            </div>
-        </Link>
-    );
-}
-
-function ProductSkeleton() {
-    return (
-        <div>
-            <div className="aspect-[3/4] bg-zinc-800 rounded-sm mb-4 animate-pulse" />
-            <div className="h-4 bg-zinc-800 rounded animate-pulse mb-2 w-3/4" />
-            <div className="h-3 bg-zinc-800 rounded animate-pulse w-1/2" />
-        </div>
-    );
-}
-
-export default function CollectionsPage() {
-    const [collections, setCollections] = useState<Collection[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        async function fetchAll() {
-            try {
-                // Fetch collections and products in parallel for faster loading
-                const [colRes, prodRes] = await Promise.all([
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/collections`),
-                    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
-                ]);
-
-                const colData = await colRes.json();
-                const prodData = await prodRes.json();
-
-                if (!colData.success) return;
-
-                const cols: Collection[] = colData.data;
-                const allProducts: Product[] = prodData.success ? prodData.data : [];
-
-                // 3. Group products into their collections
-                const withProducts = cols.map(col => ({
-                    ...col,
-                    products: allProducts.filter(p => p.collectionId === col._id || (p as any).collectionId?.toString() === col._id)
-                }));
-
-                setCollections(withProducts);
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchAll();
-    }, []);
-
-    function handleScrollTo(slug: string) {
-        document.getElementById(`collection-${slug}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+export default async function CollectionsPage() {
+    const collections = await getData();
 
     return (
         <main className="min-h-screen bg-pt-bg text-pt-text">
@@ -177,40 +58,14 @@ export default function CollectionsPage() {
             </header>
 
             {/* Collection Index (Quick jump nav) */}
-            {!loading && collections.length > 0 && (
-                <nav className="sticky top-[65px] z-40 bg-black/50 backdrop-blur-md border-b border-white/5 transition-all duration-300 px-6 md:px-12 py-4">
-                    <div className="max-w-[1400px] mx-auto flex gap-6 overflow-x-auto scrollbar-hide">
-                        {collections.map(col => (
-                            <button
-                                key={col._id}
-                                onClick={() => handleScrollTo(col.slug)}
-                                className="shrink-0 text-xs font-bold uppercase tracking-widest text-pt-secondary hover:text-pt-clay transition-colors whitespace-nowrap"
-                            >
-                                {col.name}
-                                {col.products && col.products.length > 0 && (
-                                    <span className="ml-1.5 text-zinc-600">({col.products.length})</span>
-                                )}
-                            </button>
-                        ))}
-                    </div>
-                </nav>
+            {collections.length > 0 && (
+                <CollectionsNav collections={collections} />
             )}
 
             {/* Collections with products */}
             <div className="max-w-[1400px] mx-auto px-6 md:px-12 py-16 space-y-32">
-                {loading ? (
-                    // Skeletons
-                    [1, 2, 3].map(i => (
-                        <div key={i}>
-                            <div className="h-8 bg-zinc-800 rounded animate-pulse w-48 mb-4" />
-                            <div className="h-4 bg-zinc-800 rounded animate-pulse w-96 mb-12" />
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                {[1, 2, 3, 4].map(j => <ProductSkeleton key={j} />)}
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    collections.map((col, idx) => (
+                {collections.length > 0 ? (
+                    collections.map((col: any, idx: number) => (
                         <section
                             key={col._id}
                             id={`collection-${col.slug}`}
@@ -239,7 +94,7 @@ export default function CollectionsPage() {
                             {col.products && col.products.length > 0 ? (
                                 <>
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-                                        {col.products.slice(0, 4).map(product => (
+                                        {col.products.slice(0, 4).map((product: any) => (
                                             <ProductCard key={product._id} product={product} />
                                         ))}
                                     </div>
@@ -259,6 +114,11 @@ export default function CollectionsPage() {
                             )}
                         </section>
                     ))
+                ) : (
+                    <div className="py-24 text-center border border-dashed border-zinc-800 rounded-sm">
+                        <ShoppingBag className="w-10 h-10 text-zinc-700 mx-auto mb-4" />
+                        <p className="text-zinc-500 text-sm mb-6">No collections found yet.</p>
+                    </div>
                 )}
             </div>
         </main>

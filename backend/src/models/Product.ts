@@ -12,12 +12,14 @@ export interface IProduct extends Document {
     dimensions?: string;
     material?: string;
     sku?: string;
+    slug: string;
     stockQty?: number;
     inStock: boolean;
 }
 
 const ProductSchema: Schema = new Schema({
     name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
     images: { type: [String], default: [] },

@@ -4,6 +4,11 @@ import { upload, cloudinary } from '../lib/cloudinary';
 
 const router = express.Router();
 
+function slugify(name: string) {
+    return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+
 // GET /api/products  — optional ?collectionId=...
 router.get('/', async (req, res) => {
     try {
@@ -16,10 +21,17 @@ router.get('/', async (req, res) => {
     }
 });
 
-// GET /api/products/:id
+// GET /api/products/:idOrSlug
 router.get('/:id', async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id);
+        const { id } = req.params;
+        let product;
+        if (id.match(/^[0-9a-fA-F]{24}$/)) {
+            product = await Product.findById(id);
+        }
+        if (!product) {
+            product = await Product.findOne({ slug: id });
+        }
         if (!product) return res.status(404).json({ success: false, error: 'Product not found' });
         res.json({ success: true, data: product });
     } catch {
@@ -49,9 +61,11 @@ router.post('/', upload.array('images', 5), async (req, res) => {
 
         // Handle empty collectionId or other optional fields
         const collectionId = req.body.collectionId === "" ? undefined : req.body.collectionId;
+        const slug = slugify(req.body.name);
 
         const product = await Product.create({
             name: req.body.name,
+            slug,
             description: req.body.description,
             price: Number(req.body.price),
             category: req.body.category,
@@ -113,6 +127,9 @@ router.put('/:id', upload.array('images', 5), async (req, res) => {
         const updateData = { ...req.body };
         if (updateData.collectionId === "") {
             updateData.collectionId = null;
+        }
+        if (updateData.name) {
+            updateData.slug = slugify(updateData.name);
         }
 
         if (req.body.tags) {

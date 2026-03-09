@@ -10,6 +10,7 @@ import { formatPrice } from '@/lib/formatPrice';
 interface Product {
     _id: string;
     name: string;
+    slug?: string;
     price: number;
     images: string[];
     description: string;
@@ -206,7 +207,7 @@ function SearchResults() {
                                     {results.map(product => {
                                         const colName = getCollectionName(product.collectionId);
                                         return (
-                                            <Link key={product._id} href={`/shop/${product._id}`} className="group block">
+                                            <Link key={product._id} href={`/shop/${product.slug || product._id}`} className="group block">
                                                 <div className="aspect-[3/4] bg-zinc-900 rounded-sm mb-4 overflow-hidden relative">
                                                     {product.images?.[0] ? (
                                                         <Image

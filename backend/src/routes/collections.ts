@@ -49,10 +49,17 @@ router.post('/upload-image', collectionUpload.single('image'), async (req, res) 
     }
 });
 
-// GET /api/collections/:slug  (by slug OR id)
+// GET /api/collections/:idOrSlug  (by slug OR id)
 router.get('/:slug', async (req, res) => {
     try {
-        const collection = await Collection.findOne({ slug: req.params.slug });
+        const { slug } = req.params;
+        let collection;
+        if (slug.match(/^[0-9a-fA-F]{24}$/)) {
+            collection = await Collection.findById(slug);
+        }
+        if (!collection) {
+            collection = await Collection.findOne({ slug });
+        }
         if (!collection) return res.status(404).json({ success: false, error: 'Collection not found' });
         res.json({ success: true, data: collection });
     } catch {

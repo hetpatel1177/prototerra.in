@@ -10,6 +10,7 @@ import { formatPrice } from '@/lib/formatPrice';
 interface Product {
     _id: string;
     name: string;
+    slug?: string;
     price: number;
     images: string[];
     material?: string;
@@ -35,7 +36,7 @@ function TiltCard({ product, index }: { product: Product; index: number }) {
     const rotateY = useTransform(mouseX, v => v);
 
     return (
-        <Link href={`/shop/${product._id}`}>
+        <Link href={`/shop/${product.slug || product._id}`}>
             <motion.div
                 ref={ref}
                 onMouseMove={handleMouseMove}
