@@ -34,4 +34,5 @@ const ProductSchema: Schema = new Schema({
     inStock: { type: Boolean, default: true },
 }, { timestamps: true });
 
-export default mongoose.model<IProduct>('Product', ProductSchema);
+const Product = mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
+export default Product;

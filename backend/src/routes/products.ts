@@ -23,28 +23,47 @@ router.get('/', async (req, res) => {
 
 // GET /api/products/:idOrSlug
 router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    console.log(`[GET Product] Requested: ${id}`);
+    
     try {
-        const { id } = req.params;
         let product = null;
 
-        // Try searching by ID if it's a valid ObjectId
-        if (id.match(/^[0-9a-fA-F]{24}$/)) {
-            product = await Product.findById(id);
+        // 1. Try search by MongoDB ID
+        if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
+            try {
+                product = await Product.findById(id);
+            } catch (err) {
+                console.error(`[GET Product] ID search failed for ${id}:`, err);
+            }
         }
 
-        // If not found by ID (or not a valid ID), try searching by slug
-        if (!product) {
-            product = await Product.findOne({ slug: id });
+        // 2. Try search by Slug
+        if (!product && id) {
+            try {
+                // Ensure id is a string and trim it
+                const slugToSearch = String(id).trim();
+                product = await Product.findOne({ slug: slugToSearch });
+            } catch (err) {
+                console.error(`[GET Product] Slug search failed for ${id}:`, err);
+                // If it fails here, the database might not have the 'slug' field indexed correctly
+                // or there's a schema mismatch.
+                throw err; 
+            }
         }
 
         if (!product) {
+            console.log(`[GET Product] Not found: ${id}`);
             return res.status(404).json({ success: false, error: 'Product not found' });
         }
 
         res.json({ success: true, data: product });
     } catch (err: any) {
-        console.error('[API Error] Failed to get product:', err);
-        res.status(500).json({ success: false, error: err.message || 'Server Error' });
+        console.error(`[GET Product] Global error for ${id}:`, err);
+        res.status(500).json({ 
+            success: false, 
+            error: `Database error: ${err.message || 'Unknown'}` 
+        });
     }
 });
 

@@ -16,4 +16,5 @@ const CollectionSchema: Schema = new Schema({
     featured: { type: Boolean, default: false },
 }, { timestamps: true });
 
-export default mongoose.model<ICollection>('Collection', CollectionSchema);
+const Collection = mongoose.models.Collection || mongoose.model<ICollection>('Collection', CollectionSchema);
+export default Collection;
