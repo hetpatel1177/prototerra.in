@@ -8,12 +8,20 @@ import { Info } from 'lucide-react';
 export function ProductInfo({ initialData }: { initialData?: any }) {
     const [collections, setCollections] = useState<{ _id: string; name: string }[]>([]);
 
+    const [selectedCollection, setSelectedCollection] = useState(initialData?.collectionId || "");
+
     useEffect(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/collections`)
             .then(r => r.json())
             .then(d => { if (d.success) setCollections(d.data); })
             .catch(() => { });
     }, []);
+
+    useEffect(() => {
+        if (initialData?.collectionId) {
+            setSelectedCollection(initialData.collectionId);
+        }
+    }, [initialData]);
 
     return (
         <Card>
@@ -72,10 +80,12 @@ export function ProductInfo({ initialData }: { initialData?: any }) {
                     <div className="space-y-2">
                         <label className="text-sm font-medium" htmlFor="collectionId">Collection</label>
                         <select
+                            key={collections.length}
                             id="collectionId"
                             name="collectionId"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                            defaultValue={initialData?.collectionId || ""}
+                            value={selectedCollection}
+                            onChange={(e) => setSelectedCollection(e.target.value)}
                         >
                             <option value="">No collection</option>
                             {collections.map(c => (

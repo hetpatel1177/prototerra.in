@@ -25,17 +25,26 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        let product;
+        let product = null;
+
+        // Try searching by ID if it's a valid ObjectId
         if (id.match(/^[0-9a-fA-F]{24}$/)) {
             product = await Product.findById(id);
         }
+
+        // If not found by ID (or not a valid ID), try searching by slug
         if (!product) {
             product = await Product.findOne({ slug: id });
         }
-        if (!product) return res.status(404).json({ success: false, error: 'Product not found' });
+
+        if (!product) {
+            return res.status(404).json({ success: false, error: 'Product not found' });
+        }
+
         res.json({ success: true, data: product });
-    } catch {
-        res.status(500).json({ success: false, error: 'Server Error' });
+    } catch (err: any) {
+        console.error('[API Error] Failed to get product:', err);
+        res.status(500).json({ success: false, error: err.message || 'Server Error' });
     }
 });
 

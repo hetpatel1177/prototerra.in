@@ -9,6 +9,8 @@ const STATIC_ROUTES = [
     '/contact',
     '/login',
     '/signup',
+    '/terms',
+    '/privacy',
 ];
 
 export const revalidate = 86400; // Revalidate sitemap once a day
