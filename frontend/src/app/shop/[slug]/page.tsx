@@ -6,7 +6,7 @@ export const revalidate = 3600; // Revalidate every hour
 
 async function getProduct(slug: string) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${slug}`, {
-        next: { revalidate: 3600 }
+        cache: 'no-store'
     });
     if (!res.ok) return null;
     const data = await res.json();
