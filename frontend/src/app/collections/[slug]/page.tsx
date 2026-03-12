@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             images: data.collection.image ? [{ url: data.collection.image }] : [],
         },
         alternates: {
-            canonical: `/collections/${data.collection.slug || data.collection._id}`,
+            canonical: `${process.env.NEXT_PUBLIC_SITE_URL || ''}/collections/${data.collection.slug || data.collection._id}`,
         }
     };
 }

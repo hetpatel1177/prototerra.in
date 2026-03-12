@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             images: product.images?.[0] ? [{ url: product.images[0] }] : [],
         },
         alternates: {
-            canonical: `/shop/${product.slug || product._id}`,
+            canonical: `${process.env.NEXT_PUBLIC_SITE_URL || ''}/shop/${product.slug || product._id}`,
         }
     };
 }

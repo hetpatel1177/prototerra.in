@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://prototerra.in'),
+  metadataBase: new URL('https://www.prototerra.in'),
   title: {
     default: 'ProtoTerra | Earth & Code',
     template: '%s | ProtoTerra'
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://prototerra.in',
+    url: 'https://www.prototerra.in',
     siteName: 'ProtoTerra',
     title: 'ProtoTerra | Earth & Code',
     description: 'Technology shaped by Earth. Immersive storytelling environment and premium products built from nature.',

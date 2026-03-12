@@ -2,13 +2,10 @@ import { MetadataRoute } from 'next';
 
 const STATIC_ROUTES = [
     '',
-    '/shop',
     '/collections',
     '/our-story',
     '/sustainability',
     '/contact',
-    '/login',
-    '/signup',
     '/terms',
     '/privacy',
 ];
@@ -16,7 +13,7 @@ const STATIC_ROUTES = [
 export const revalidate = 86400; // Revalidate sitemap once a day
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = 'https://prototerra.in';
+    const baseUrl = 'https://www.prototerra.in';
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.prototerra.in';
 
     // Static pages

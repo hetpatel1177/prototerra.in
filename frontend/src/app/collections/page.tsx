@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: 'The Collections',
     description: 'A curated assembly of artisanal pottery, where ancient tradition meets modern form. Browse our featured collections of premium ceramics.',
     alternates: {
-        canonical: '/collections',
+        canonical: `${process.env.NEXT_PUBLIC_SITE_URL || ''}/collections`,
     }
 };
 
