@@ -26,6 +26,7 @@ const allowedOrigins = [
     "https://prototerra.in",
     "https://www.prototerra.in",
     "https://admin.prototerra.in",
+    "https://prototerra-in.onrender.com",
     "http://localhost:3000",
     "http://localhost:3001"
 ];
