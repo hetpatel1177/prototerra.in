@@ -25,6 +25,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.prototerra.in'),
   title: {
     default: 'ProtoTerra | Earth & Code',
