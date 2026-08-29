@@ -16,7 +16,7 @@ export default function FeaturedCollections() {
     const [collections, setCollections] = useState<Collection[]>([]);
 
     useEffect(() => {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.prototerra.in';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://prototerra-in.onrender.com';
         fetch(`${apiUrl}/api/collections`)
             .then(r => r.json())
             .then(d => { if (d.success) setCollections(d.data.slice(0, 3)); })

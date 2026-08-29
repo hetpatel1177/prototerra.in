@@ -23,7 +23,7 @@ export const options = {
 
 // 2. Constants & Endpoints
 const BASE_URL = 'https://www.prototerra.in';
-const API_URL = 'https://api.prototerra.in';
+const API_URL = 'https://prototerra-in.onrender.com';
 
 // Helper for headers
 const HEADERS = {

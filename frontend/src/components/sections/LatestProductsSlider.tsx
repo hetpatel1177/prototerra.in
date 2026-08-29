@@ -31,7 +31,7 @@ export default function LatestProductsSlider() {
     useEffect(() => {
         async function fetchProducts() {
             try {
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.prototerra.in';
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://prototerra-in.onrender.com';
                 const res = await fetch(`${apiUrl}/api/products`);
                 const data = await res.json();
                 if (data.success) {

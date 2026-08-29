@@ -14,7 +14,7 @@ export const revalidate = 86400; // Revalidate sitemap once a day
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://www.prototerra.in';
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.prototerra.in';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://prototerra-in.onrender.com';
 
     // Static pages
     const sitemapEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({

@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.prototerra.in';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://prototerra-in.onrender.com';
         // We fetch the dynamic data specifically to set open graph headers without altering client structure
         const res = await fetch(`${apiUrl}/api/products/${params.slug}`);
         if (!res.ok) return { title: 'Product | ProtoTerra' };
