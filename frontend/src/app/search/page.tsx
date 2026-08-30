@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Search, ShoppingBag, ArrowLeft, X } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
+import { getApiUrl } from '@/lib/api';
 
 interface Product {
     _id: string;
@@ -59,8 +60,8 @@ function SearchResults() {
     // Fetch all products + collections once
     useEffect(() => {
         Promise.all([
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`).then(r => r.json()),
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/collections`).then(r => r.json()),
+            fetch(getApiUrl('/api/products')).then(r => r.json()),
+            fetch(getApiUrl('/api/collections')).then(r => r.json()),
         ]).then(([prod, col]) => {
             if (prod.success) setAllProducts(prod.data);
             if (col.success) setAllCollections(col.data);

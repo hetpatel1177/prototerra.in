@@ -1,8 +1,8 @@
-
 'use client';
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { getApiUrl } from '@/lib/api';
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -21,7 +21,7 @@ export default function ContactPage() {
         setStatus('loading');
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contact`, {
+            const res = await fetch(getApiUrl('/api/contact'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),

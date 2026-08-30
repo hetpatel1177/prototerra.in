@@ -3,6 +3,7 @@ import Google from 'next-auth/providers/google';
 import Credentials from 'next-auth/providers/credentials';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
 import clientPromise from '@/lib/mongodb';
+import { getApiUrl } from '@/lib/api';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: MongoDBAdapter(clientPromise),
@@ -24,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 if (!credentials?.email || !credentials?.password) return null;
 
                 try {
-                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+                    const res = await fetch(getApiUrl('/api/auth/login'), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({

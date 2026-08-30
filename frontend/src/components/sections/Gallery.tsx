@@ -5,6 +5,7 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ShoppingBag } from 'lucide-react';
+import { getApiUrl } from '@/lib/api';
 import { formatPrice } from '@/lib/formatPrice';
 
 interface Product {
@@ -79,7 +80,7 @@ export default function Gallery() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
+        fetch(getApiUrl('/api/products'))
             .then(r => r.json())
             .then(d => {
                 if (d.success) setProducts(d.data.slice(0, 4));

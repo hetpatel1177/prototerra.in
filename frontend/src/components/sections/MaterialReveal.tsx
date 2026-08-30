@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRef } from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { getApiUrl } from '@/lib/api';
 
 interface Product {
     _id: string;
@@ -26,7 +27,7 @@ export default function MaterialReveal() {
     const y = useTransform(scrollYProgress, [0, 1], [40, 0]);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
+        fetch(getApiUrl('/api/products'))
             .then(r => r.json())
             .then(d => { if (d.success && d.data.length > 0) setProduct(d.data[0]); })
             .catch(console.error);

@@ -4,14 +4,14 @@ import Image from 'next/image';
 import { ShoppingBag, ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import CollectionsNav from './CollectionsNav';
+import { getApiUrl } from '@/lib/api';
 
 export const revalidate = 3600;
 
 async function getData() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [colRes, prodRes] = await Promise.all([
-        fetch(`${apiUrl}/api/collections`, { next: { revalidate: 3600 } }),
-        fetch(`${apiUrl}/api/products`, { next: { revalidate: 3600 } })
+        fetch(getApiUrl('/api/collections'), { next: { revalidate: 3600 } }),
+        fetch(getApiUrl('/api/products'), { next: { revalidate: 3600 } })
     ]);
 
     const colData = await colRes.json();

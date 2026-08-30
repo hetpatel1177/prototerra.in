@@ -2,6 +2,7 @@
 import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { getApiUrl } from '@/lib/api';
 
 function ResetPasswordForm() {
     const router = useRouter();
@@ -32,7 +33,7 @@ function ResetPasswordForm() {
         setMessage('');
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/reset-password`, {
+            const res = await fetch(getApiUrl('/api/auth/reset-password'), {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token, password })

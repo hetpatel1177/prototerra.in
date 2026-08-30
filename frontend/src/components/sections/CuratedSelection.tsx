@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
+import { getApiUrl } from '@/lib/api';
 
 interface Product {
     _id: string;
@@ -24,7 +25,7 @@ export default function CuratedSelection() {
     const skeletons = [1, 2, 3, 4];
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
+        fetch(getApiUrl('/api/products'))
             .then(r => r.json())
             .then(d => { if (d.success) setProducts(d.data.slice(0, 4)); })
             .catch(console.error);

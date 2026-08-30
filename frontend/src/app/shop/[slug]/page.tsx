@@ -1,11 +1,12 @@
 import { Metadata } from 'next';
 import ProductClient from './ProductClient';
 import { notFound } from 'next/navigation';
+import { getApiUrl } from '@/lib/api';
 
 export const revalidate = 3600; // Revalidate every hour
 
 async function getProduct(slug: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${slug}`, {
+    const res = await fetch(getApiUrl(`/api/products/${slug}`), {
         next: { revalidate: 3600 }
     });
     if (!res.ok) return null;
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export async function generateStaticParams() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
+        const res = await fetch(getApiUrl('/api/products'));
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
             return data.data.map((product: any) => ({

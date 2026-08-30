@@ -1,14 +1,13 @@
 import { Metadata } from 'next';
 import CollectionClient from './CollectionClient';
 import { notFound } from 'next/navigation';
+import { getApiUrl } from '@/lib/api';
 
 export const revalidate = 3600;
 
 async function getCollectionData(slug: string) {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
     // Fetch collection details
-    const colRes = await fetch(`${apiUrl}/api/collections/${slug}`, { next: { revalidate: 3600 } });
+    const colRes = await fetch(getApiUrl(`/api/collections/${slug}`), { next: { revalidate: 3600 } });
     if (!colRes.ok) return null;
     const colData = await colRes.json();
 
@@ -17,7 +16,7 @@ async function getCollectionData(slug: string) {
     const collection = colData.data;
 
     // Fetch products in this collection
-    const prodRes = await fetch(`${apiUrl}/api/products?collectionId=${collection._id}`, { next: { revalidate: 3600 } });
+    const prodRes = await fetch(getApiUrl(`/api/products?collectionId=${collection._id}`), { next: { revalidate: 3600 } });
     const prodData = await prodRes.json();
     const products = prodData.success ? prodData.data : [];
 
@@ -46,7 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export async function generateStaticParams() {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/collections`);
+        const res = await fetch(getApiUrl('/api/collections'));
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
             return data.data.map((col: any) => ({

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { CheckCircle, MapPin, Calendar, Printer } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { formatPrice } from '@/lib/formatPrice';
+import { getApiUrl } from '@/lib/api';
 
 interface OrderItem {
     productId: {
@@ -47,7 +48,7 @@ export default function OrderConfirmationPage() {
 
         async function fetchOrder() {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/${id}`);
+                const res = await fetch(getApiUrl(`/api/orders/${id}`));
                 const data = await res.json();
                 if (data.success) {
                     setOrder(data.data);

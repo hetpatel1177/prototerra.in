@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Instagram, Mail, Globe, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { getApiUrl } from '@/lib/api';
 
 export default function Footer() {
     const [collections, setCollections] = useState<{ name: string; slug: string }[]>([]);
@@ -18,7 +19,7 @@ export default function Footer() {
         setMessage('');
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/newsletter/subscribe`, {
+            const res = await fetch(getApiUrl('/api/newsletter/subscribe'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
@@ -40,7 +41,7 @@ export default function Footer() {
     };
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/collections`)
+        fetch(getApiUrl('/api/collections'))
             .then(r => r.json())
             .then(d => { if (d.success) setCollections(d.data.slice(0, 5)); })
             .catch(() => { });

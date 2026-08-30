@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Star, Trash2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { getApiUrl } from '@/lib/api';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 
@@ -43,7 +44,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
 
     const fetchReviews = async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${productId}`);
+            const res = await fetch(getApiUrl(`/api/reviews/${productId}`));
             const data = await res.json();
             if (data.success) {
                 setReviews(data.data);
@@ -60,7 +61,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
         setSubmitting(true);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`, {
+            const res = await fetch(getApiUrl('/api/reviews'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -94,7 +95,7 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
         if (!confirm('Are you sure you want to delete this review?')) return;
         try {
             const emailParam = session?.user?.email ? `?email=${encodeURIComponent(session.user.email)}` : '';
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${reviewId}${emailParam}`, {
+            const res = await fetch(getApiUrl(`/api/reviews/${reviewId}${emailParam}`), {
                 method: 'DELETE'
             });
             const data = await res.json();

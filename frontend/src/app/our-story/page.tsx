@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getApiUrl } from '@/lib/api';
 
 // Default content as fallback
 const defaultContent = {
@@ -34,7 +35,7 @@ export default function OurStoryPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/content/our-story`)
+        fetch(getApiUrl('/api/content/our-story'))
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.data) {

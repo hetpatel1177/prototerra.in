@@ -6,6 +6,7 @@ import { User, LogOut, Package, ExternalLink, ChevronRight } from 'lucide-react'
 import { signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { formatPrice } from '@/lib/formatPrice';
+import { getApiUrl } from '@/lib/api';
 
 interface Order {
     _id: string;
@@ -33,7 +34,7 @@ export default function AccountPage() {
     useEffect(() => {
         if (session?.user?.email) {
             setLoading(true);
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders?email=${session.user.email}`)
+            fetch(getApiUrl(`/api/orders?email=${session.user.email}`))
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {

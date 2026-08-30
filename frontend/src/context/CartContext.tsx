@@ -1,5 +1,6 @@
 'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getApiUrl } from '@/lib/api';
 
 // Define the shape of a cart item
 // Using 'any' for product details flexibility for now, but ideally interface Product
@@ -107,7 +108,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const syncStock = async () => {
         if (items.length === 0) return;
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`);
+            const res = await fetch(getApiUrl('/api/products'));
             const data = await res.json();
             if (data.success) {
                 const products = data.data;

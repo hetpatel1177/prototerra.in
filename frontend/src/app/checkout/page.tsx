@@ -7,6 +7,7 @@ import { Lock, ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
+import { getApiUrl } from '@/lib/api';
 import { useSession } from 'next-auth/react';
 
 declare global {
@@ -87,7 +88,7 @@ export default function CheckoutPage() {
 
         try {
             // 1. Create Order on Backend
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
+            const res = await fetch(getApiUrl('/api/orders'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -147,7 +148,7 @@ export default function CheckoutPage() {
                 handler: async function (response: any) {
                     // 3. Verify Payment
                     try {
-                        const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/verify-payment`, {
+                        const verifyRes = await fetch(getApiUrl('/api/orders/verify-payment'), {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
